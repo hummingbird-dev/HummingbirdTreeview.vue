@@ -122,6 +122,7 @@
 	 getCheckedNodes(mode){
 	     //mode: all      -> returns all checked nodes
 	     //      endnodes -> return only checked endnodes
+             //      parents  -> return only checked parent nodes
 	     //console.log("getCheckedNodes")
 	     const callGetCheckedNodes   = this.$refs.hummingbirdtreeviewref;
 	     callGetCheckedNodes.getCheckedNodes(mode);
