@@ -24,7 +24,7 @@ Install via npm
 
 ``` shell
 
-$ npm install HummingBirdTreeview.vue
+$ npm install hummingbirdtreeview.vue
 $ npm install @heroicons/vue
 
 ```

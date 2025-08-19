@@ -19,7 +19,7 @@
   "homepage": "https://github.com/hummingbird-dev/HummingbirdTreeview.vue#readme",
   "dependencies": {
     "vue": ">3.5.18",
-    "heroicons/vue": ">2.2.0"
+    "heroicons": ">2.2.0"
   }
     
 }
