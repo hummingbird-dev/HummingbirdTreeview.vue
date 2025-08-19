@@ -35,7 +35,7 @@ $ npm install @heroicons/vue
 
 ## Input data
 
-HummingbirdTreeview.vue makes it super easy to create deep hirarchical
+HummingbirdTreeview.vue makes it super easy to create deep hierarchical
 trees. The key is to create a simple Javascript array of objects:
 
 ``` javascript
