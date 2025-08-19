@@ -1,5 +1,5 @@
 {
-  "name": "hummingbirdtreeview.vuex",
+  "name": "hummingbirdtreeview.vue",
   "version": "1.0.0",
   "description": "A powerful and fast Vue.js treeview component.",
   "main": "App.vue",
