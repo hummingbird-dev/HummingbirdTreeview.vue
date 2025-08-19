@@ -22,4 +22,5 @@ A powerful and fast Vue.js treeview component.
 
 ![alt text](./treeview_vue_anim.gif "HummingbirdTreeview.vue example animation")
 
+<img src="./treeview_vue_anim.gif" width="100">
 
