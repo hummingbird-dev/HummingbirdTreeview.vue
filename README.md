@@ -25,7 +25,6 @@ Install via npm
 ``` shell
 
 $ npm install hummingbirdtreeview.vue
-$ npm install @heroicons/vue
 
 ```
 
@@ -144,7 +143,7 @@ integrated into your project.
 
 <script>
 
- import HummingbirdTreeview from './components/HummingbirdTreeview.vue'
+ import HummingbirdTreeviewRender from "hummingbirdtreeview.vue/HummingbirdTreeviewRender.vue";
  
  export default {
      components: {

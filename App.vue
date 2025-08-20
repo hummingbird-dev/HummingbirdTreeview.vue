@@ -35,7 +35,7 @@
 
 <script>
 
- import HummingbirdTreeview from './components/HummingbirdTreeview.vue'
+ import HummingbirdTreeview from 'hummingbirdtreeview.vue/HummingbirdTreeview.vue'
  
  export default {
      components: {
