@@ -15,8 +15,15 @@ A powerful and fast Vue.js treeview component.
 
 ## Dependencies
 
-- vue@3.5.18 
-- @heroicons/vue
+- vue 
+- (tailwindcss)
+- (heroicons)
+
+Sometimes it can be tricky to integrate a component into ones own
+workflow. Therefore we ship all styles with the *style.css* to be
+independent from *tailwindcss* and *heroicons*. However, if you want
+to change the style of the *HummingbirdTreeview* you have to integrate
+it into your environment and do not use our *style.css*.
 
 ## Installation
 
@@ -104,6 +111,8 @@ At the moment the only available attribute is "name", others will follow.
 
 The following vue component shows how HummingbirdTreeview.vue can be
 integrated into your project.
+
+Important: Integrate the *style.css* into your project.
 
 ``` javascript
 <template>

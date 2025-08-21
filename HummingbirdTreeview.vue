@@ -39,6 +39,8 @@
 
 <script>
 
+
+ 
  import HummingbirdTreeviewRender from "./HummingbirdTreeviewRender.vue";
  
  export default {
@@ -97,7 +99,7 @@
 	     //
 	     let level = 0;
 	     let parents = [];
-	     let new_parents = [];	     
+	     let new_parents = [];
 	     for (let k in this.tree){
 		 //console.log("k="+k)
 		 //console.log(typeof(k))
@@ -139,35 +141,36 @@
 		     new_parents = parents.slice(0,-1);
 		 }
 		 //-------------------------------------------------
-
-			    
-		 //fill the tree / nodes
+                 //
+		 //new test without eval
 		 if (level>1){
 		     if (new_parents.length < level){
 			 let xk = (Number(k)-1).toString();
-			 let object_level = "this.fulltree[parents[0]]";
 			 let parents_next = new_parents.slice(1,);
 			 //create children objects
-			 for (let key in parents_next){
-			     object_level = object_level + '.children["'+ parents_next[key] +'"]';
-			 }
-			 //
-			 let xnode_template = JSON.parse(JSON.stringify(node_template));
-			 let xobject_level = object_level + '.children["'+ parents.slice(-1,) + '"]=Object.assign({}, xnode_template)';
-			 //
-			 //--------------------eval------------------------//
-			 eval(xobject_level);
+			 let L_parents_next = parents_next.length;
+			 //console.log("L="+L_parents_next)
 
-			 let yobject_level = object_level + '.children["'+ parents.slice(-1,) + '"].name="' + name[0] + '"';
-			 //console.log(yobject_level)
-			 eval(yobject_level);
-			 let zobject_level = object_level + '.children["'+ parents.slice(-1,) + '"].level=' + level ;
-			 eval(zobject_level);
-			 //console.log(new_parents)
-			 let aobject_level = object_level + '.children["'+ parents.slice(-1,) + '"].parents=' + JSON.stringify(new_parents);
-			 //console.log(aobject_level)
-			 eval(aobject_level)
-			 //--------------------eval------------------------//
+			 let xnode_template = JSON.parse(JSON.stringify(node_template));
+			 
+			 if (L_parents_next == 0){
+			     this.fulltree[parents[0]].children[parents.slice(-1,)] = Object.assign({}, xnode_template);
+			     this.fulltree[parents[0]].children[parents.slice(-1,)].name = name[0];
+			     this.fulltree[parents[0]].children[parents.slice(-1,)].level = level;
+			     this.fulltree[parents[0]].children[parents.slice(-1,)].parents = new_parents;
+			 }
+			 if (L_parents_next == 1){
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)] = Object.assign({}, xnode_template);
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].name = name[0];			  
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].level = level;			  
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].parents = new_parents;
+			 }
+			 if (L_parents_next == 2){
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)] = Object.assign({}, xnode_template);
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].name = name[0];			    
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].level = level;			    
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].parents = new_parents;
+			 }
 		     }
 		 }
 	     }

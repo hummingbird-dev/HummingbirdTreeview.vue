@@ -190,60 +190,53 @@
 	     }
 	 },
 	 loopRecursParent(node){
-	     //console.log(node)
-	     //console.log(node.parent)
-	     //console.log("fulltree")
-	     //console.log(this.fulltree["Warner Bros."])
 	     let L = node.parents.length;
-	     //console.log("L="+L)
 	     if (L == 0){
 		 return;
 	     }
-	     //build node with eval, get parent from bottom to top
+	     //build node without eval, get parent from bottom to top
 	     //and check every level
 	     for (let i=L; i>=1; i--){
-		 var parents = "this.fulltree[node.parents[0]]";
-		 for (let j=2; j<=i; j++){
-		     parents = parents + '.children[node.parents[' + (j-1) + ']]';
+		 if (i == 1){
+		     var parents = this.fulltree[node.parents[0]];
 		 }
-		 //console.log(parents)
-		 //console.log(eval(parents))
-		 //console.log(eval(parents).name)
-		 //console.log(Object.keys(eval(parents).children).length)
-		 let childrenLength = Object.keys(eval(parents).children).length;
+		 if (i == 2){
+		     var parents = this.fulltree[node.parents[0]].children[node.parents[1]];
+		 }
+		 if (i == 3){
+		     var parents = this.fulltree[node.parents[0]].children[node.parents[1]].children[node.parents[2]];
+		 }
+		 //
+		 let childrenLength = Object.keys(parents.children).length;
 		 //count how many children are checked
 		 let counter = 0
 		 let indeterminate_counter = 0
-		 for (let child in eval(parents).children){
-		     //console.log(eval(parents).children[child].checked)
-		     if (eval(parents).children[child].checked){
+		 for (let child in parents.children){
+		     if (parents.children[child].checked){
 			 counter++;
 		     }
-		     if (eval(parents).children[child].indeterminate){
+		     if (parents.children[child].indeterminate){
 			 counter++;
 			 indeterminate_counter++;
 		     }
 		 }
 		 if (counter >= childrenLength){
-		     eval(parents).checked = true;
-		     eval(parents).indeterminate = false;
+		     parents.checked = true;
+		     parents.indeterminate = false;
 		     //if one of these checked is indeterminate, make node indeterminate
 		     if (indeterminate_counter > 0){
-			 eval(parents).checked = false;
-			 eval(parents).indeterminate = true;
+			 parents.checked = false;
+			 parents.indeterminate = true;
 		     }
 		 }
 		 if (counter < childrenLength && counter > 0){
-		     eval(parents).indeterminate = true;
+		     parents.indeterminate = true;
 		 }
 		 if (counter == 0){
-		     eval(parents).checked = false;
-		     eval(parents).indeterminate = false;
+		     parents.checked = false;
+		     parents.indeterminate = false;
 		 }
 	     }
-
-
-
 	 },
 	 uncheckAllOther(){
 	    //console.log("uncheck")
