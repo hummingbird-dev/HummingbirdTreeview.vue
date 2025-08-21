@@ -20,10 +20,10 @@ A powerful and fast Vue.js treeview component.
 - (heroicons)
 
 Sometimes it can be tricky to integrate a component into ones own
-workflow. Therefore we ship all styles with the *style.css* to be
+workflow. Therefore we ship all styles with the *HummingbirdTreeview.css* to be
 independent from *tailwindcss* and *heroicons*. However, if you want
 to change the style of the *HummingbirdTreeview* you have to integrate
-it into your environment and do not use our *style.css*.
+it into your environment and do not use our *HummingbirdTreeview.css*.
 
 ## Installation
 
@@ -112,7 +112,7 @@ At the moment the only available attribute is "name", others will follow.
 The following vue component shows how HummingbirdTreeview.vue can be
 integrated into your project.
 
-Important: Integrate the *style.css* into your project.
+Important: Integrate the *HummingbirdTreeview.css* into your project.
 
 ``` javascript
 <template>
@@ -255,3 +255,48 @@ Important: Integrate the *style.css* into your project.
 </script>
 
 ```
+
+
+## Project Setup
+
+As a simple example to setup *HummingbirdTreeview* follow the
+instructions at https://vuejs.org/guide/quick-start.html.
+
+Then install *HummingbirdTreeview* via npm.
+
+Next replace the *App.vue*:
+
+``` shell
+cp node_modules/hummingbirdtreeview.vue/App.vue src/App.vue
+
+```
+
+Copy the style file:
+
+``` shell
+cp node_modules/hummingbirdtreeview.vue/HummingbirdTreeview.css src/HummingbirdTreeview.css
+
+```
+
+Include the style file in *index.html*
+
+``` html
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" crossorigin href="/src/HummingbirdTreeview.css">
+
+    <title>Vite App</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+
+```
+
+Finally run your project: *npm run dev* or *npm run build*.
