@@ -271,6 +271,41 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 
 ```
 
+## Options
+
+- *treeClickMode*  
+  Can take the values *multi* to allow multiple nodes to be checked,
+  or *single* to allow only one single node to be checked. In the
+  latter case set *checkParents* to *false*.
+  
+- *checkParents*  
+  Can be *true* or *false* and allows or disallows the checking of
+  parent nodes.
+  
+- *localstoragekey*  
+  If provided, the full tree structure is saved in the localstorage
+  and can be accessed globally via that key:
+  ```javascript
+	  this.fulltree = JSON.parse(localStorage.getItem(this.localstoragekey));
+  ```
+
+
+## Methods
+
+- *getCheckedNodes(mode)*  
+  Triggers the retrieval of ckecked nodes. *mode* is a string and
+  options are getting "all", only "endnodes", or only "parents".
+  
+- *receiveCheckedNodes(checkedNodes)*  
+  *checkedEndNodes* is an array defined under *data* and takes up the
+  checked nodes for further processing. Attributes can be accessed by
+  e.g.
+  ```javascript
+	  <li v-for="i of checkedEndNodes">
+          {{ i.name }}
+      </li>
+  ```
+
 
 ## Project Setup
 
@@ -315,3 +350,4 @@ Include the style file in *index.html*
 ```
 
 Finally run your project: *npm run dev* or *npm run build*.
+
