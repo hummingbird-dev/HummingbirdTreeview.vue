@@ -48,6 +48,11 @@ trees. The key is to create a simple Javascript array of objects:
 	 tree = [
 	     {
 		 "name": "Warner Bros.",
+		 "collapsed": false,
+		 "visible": true,
+		 "checked" : false,
+		 "tooltip" : "",
+		 "filepath" : "",		 
 	     },
 	     {
 		 "name": "-Goodfellas",
@@ -105,7 +110,12 @@ Goodfellas to Robert De Niro). In contrast up the treeview,
 arbitrarily large jumps of indention are possible, i.e. the next node
 can have much less hyphens than the node before (e.g. from Morgan Freeman to Paramount).
 
-At the moment the only available attribute is "name", others will follow.
+The attribute "name" is mandatory, all others are optional and can be
+used for every item.
+
+**Important: At the moment hierarchical depth maximum is "---",
+i.e. two parent sub-nodes below the base node. The depth maximum can
+easily be extended, just let me know if you need it.**
 
 ## Usage
 
@@ -125,7 +135,7 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 		    HummingbirdTreeview.vue 
 		</div>
 		<div class="">
-		    <hummingbird-treeview :tree="tree" :treeClickMode="treeClickMode" :checkParents="checkParents" ref="hummingbirdtreeviewref" @getCheckedNodesEmit="receiveCheckedNodes">
+		    <hummingbird-treeview :tree="tree" :treeClickMode="treeClickMode" :checkParents="checkParents" ref="hummingbirdtreeviewref" @getCheckedNodesEmit="receiveCheckedNodes" :localstoragekey="localstoragekey">
 		    </hummingbird-treeview>
 		</div>
 		<div class="pt-16">
@@ -164,6 +174,7 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 	     treeClickMode: "multi", //single, multi
 	     checkParents: true, //true, false
 	     checkedEndNodes: [],
+		 localstoragekey: "humtree",
 	 }
      },
      props: {
@@ -171,9 +182,8 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
      created(){
 
 	 //create nested tree structure array of objects
-	 //at the moment, the only needed property is
-	 //name, later more properties will be
-	 //available, but not yet implemented
+	 //with properties
+	 //name is mandatory, all others are optional
 	 //
 	 //create the tree manually or automatically
 	 //with additional functions/logic
@@ -182,6 +192,11 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 	 this.tree = [
 	     {
 		 "name": "Warner Bros.",
+		 "collapsed": false,
+		 "visible": true,
+		 "checked" : false,
+		 "tooltip" : "",
+		 "filepath" : "",		 
 	     },
 	     {
 		 "name": "-Goodfellas",

@@ -1,5 +1,5 @@
 <template>
-    <hummingbird-treeview-render :tree="fulltree" :fulltree="fulltree" :treeClickMode="treeClickMode" :checkParents="checkParents"/>
+    <hummingbird-treeview-render :tree="fulltree" :fulltree="fulltree" :treeClickMode="treeClickMode" :checkParents="checkParents" :localstoragekey="localstoragekey"/>
 </template>
 
 <style>
@@ -60,27 +60,45 @@
 	 tree: Array,
 	 checkParents: Boolean, //true, false
 	 treeClickMode: String, //single, multi
-
+	 localstoragekey: String,	 
      },
      created(){
      },
      mounted: function() {
 
-	 //console.log(this.tree)
 	 //create the full tree structure
 	 this.create_full_tree();
 
+	 //put tree into localStorage
+	 //console.log(this.localstoragekey)
+	 if (this.localstoragekey != undefined){
+	     localStorage.setItem(this.localstoragekey,JSON.stringify(this.fulltree));
+	 }
+
+
+	 
+	 //console.log(this.fulltree)
+	 
 	 //identify endnodes
 	 this.find_endnodes(this.fulltree);
 
      },
      methods: {
 	 create_full_tree(){
+
+	     //if tree exist in localstorage just return it
+	     if (localStorage.getItem(this.localstoragekey) != "" && localStorage.getItem(this.localstoragekey) != null){
+		 this.fulltree = JSON.parse(localStorage.getItem(this.localstoragekey));
+		 return;
+	     }
+
+
 	     //node template
 	     //need deep copy later
 	     //these node properties will be later
 	     //optional definable in the simple tree structure
 	     //not yet implemented
+
 	     let node_template = {
 		 "name":"",
 		 "level": 0,
@@ -106,6 +124,26 @@
 		 //get level of node by dashes
 		 let tmp = this.tree[k].name.match(/^\-+/);
 		 let name = this.tree[k].name.match(/[^\-]+/);
+		 let collapsed = this.tree[k].collapsed;
+		 if (collapsed == undefined){
+		     collapsed = true;
+		 }
+		 let visible = this.tree[k].visible;
+		 if (visible == undefined){
+		     visible = false;
+		 }
+		 let checked = this.tree[k].checked;
+		 if (checked == undefined){
+		     checked = false;
+		 }
+		 let tooltip = this.tree[k].tooltip;
+		 if (tooltip == undefined){
+		     tooltip = false;
+		 }
+		 let filepath = this.tree[k].filepath;
+		 if (filepath == undefined){
+		     filepath = false;
+		 }
 		 //
 		 //if this is a base node
 		 if (tmp == null){
@@ -119,8 +157,12 @@
 		     let xnode_template = JSON.parse(JSON.stringify(node_template));
 		     this.fulltree[name[0]] = xnode_template;
 		     this.fulltree[name[0]].name = name[0];
+		     this.fulltree[name[0]].collapsed = collapsed;
 		     this.fulltree[name[0]].level = level;
-		     this.fulltree[name[0]].visible = true;		    
+		     this.fulltree[name[0]].checked = checked;
+		     this.fulltree[name[0]].visible = true;
+		     this.fulltree[name[0]].tooltip = "";
+		     this.fulltree[name[0]].filepath = "";		    
 		     //initialize parents (again for every base node)
 		     parents = [];
 		 }
@@ -156,19 +198,34 @@
 			 if (L_parents_next == 0){
 			     this.fulltree[parents[0]].children[parents.slice(-1,)] = Object.assign({}, xnode_template);
 			     this.fulltree[parents[0]].children[parents.slice(-1,)].name = name[0];
+			     this.fulltree[parents[0]].children[parents.slice(-1,)].collapsed = collapsed;
 			     this.fulltree[parents[0]].children[parents.slice(-1,)].level = level;
+			     this.fulltree[parents[0]].children[parents.slice(-1,)].visible = visible;
+			     this.fulltree[parents[0]].children[parents.slice(-1,)].checked = checked;
+			     this.fulltree[parents[0]].children[parents.slice(-1,)].tooltip = tooltip;
+			     this.fulltree[parents[0]].children[parents.slice(-1,)].filepath = filepath;
 			     this.fulltree[parents[0]].children[parents.slice(-1,)].parents = new_parents;
 			 }
 			 if (L_parents_next == 1){
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)] = Object.assign({}, xnode_template);
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].name = name[0];			  
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].level = level;			  
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].level = level;
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].collapsed = collapsed;
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].visible = visible;
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].checked = checked;			  
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].tooltip = tooltip;	
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].filepath = filepath;
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].parents = new_parents;
 			 }
 			 if (L_parents_next == 2){
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)] = Object.assign({}, xnode_template);
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].name = name[0];			    
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].level = level;			    
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].level = level;
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].visible = visible;
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].checked = checked;
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].tooltip = tooltip;  
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].filepath = filepath;
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].collapsed = collapsed;			    
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].parents = new_parents;
 			 }
 		     }
@@ -265,7 +322,7 @@
 		     }
 		 }
 	     };
-	 }
-     }
+	 },
+     },
  }
  </script>

@@ -8,7 +8,7 @@
 		    HummingbirdTreeview.vue 
 		</div>
 		<div class="">
-		    <hummingbird-treeview :tree="tree" :treeClickMode="treeClickMode" :checkParents="checkParents" ref="hummingbirdtreeviewref" @getCheckedNodesEmit="receiveCheckedNodes">
+		    <hummingbird-treeview :tree="tree" :treeClickMode="treeClickMode" :checkParents="checkParents" ref="hummingbirdtreeviewref" @getCheckedNodesEmit="receiveCheckedNodes" :localstoragekey="localstoragekey">
 		    </hummingbird-treeview>
 		</div>
 		<div class="pt-16">
@@ -35,7 +35,7 @@
 
 <script>
 
- import HummingbirdTreeview from 'hummingbirdtreeview.vue/HummingbirdTreeview.vue'
+ import HummingbirdTreeview from './components/HummingbirdTreeview.vue'
  
  export default {
      components: {
@@ -47,6 +47,7 @@
 	     treeClickMode: "multi", //single, multi
 	     checkParents: true, //true, false
 	     checkedEndNodes: [],
+	     localstoragekey: "humtree",
 	 }
      },
      props: {
@@ -65,6 +66,11 @@
 	 this.tree = [
 	     {
 		 "name": "Warner Bros.",
+		 "collapsed": false,
+		 "visible": true,
+		 "checked" : false,
+		 "tooltip" : "",
+		 "filepath" : "",		 
 	     },
 	     {
 		 "name": "-Goodfellas",
@@ -83,6 +89,7 @@
 	     },
 	     {
 		 "name": "-The Shawshank Redemption",
+		 "visible": true,
 	     },
 	     {
 		 "name": "--Tim Robbins",
@@ -122,7 +129,6 @@
 	 getCheckedNodes(mode){
 	     //mode: all      -> returns all checked nodes
 	     //      endnodes -> return only checked endnodes
-             //      parents  -> return only checked parent nodes
 	     //console.log("getCheckedNodes")
 	     const callGetCheckedNodes   = this.$refs.hummingbirdtreeviewref;
 	     callGetCheckedNodes.getCheckedNodes(mode);

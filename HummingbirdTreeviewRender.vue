@@ -24,7 +24,7 @@
 
 		<span v-if="i.endnode == false" class="font-bold  whitespace-nowrap cursor-pointer hover:text-white hover:bg-black" @click.self="toggleNode">{{i.name}}</span>
 
-		<HummingbirdTreeviewRender :tree="i.children" :fulltree="fulltree" :treeClickMode="treeClickMode" :checkParents="checkParents" v-if="i.children" @uncheckAll="uncheckAll(this.fulltree)"/>
+		<HummingbirdTreeviewRender :tree="i.children" :fulltree="fulltree" :treeClickMode="treeClickMode" :checkParents="checkParents" v-if="i.children" @uncheckAll="uncheckAll(this.fulltree)" :localstoragekey="localstoragekey"/>
 
 	    </li>
 	</ul>
@@ -56,6 +56,7 @@
 	 fulltree: Object, //fulltree and tree are the same
 	 treeClickMode: String,
 	 checkParents: Boolean,
+	 localstoragekey: String,
      },
      created(){
 	 if (this.checkParents == false){
@@ -113,7 +114,7 @@
 
 	     this.last_node = node;
 	     //put into dlocalStorage
-	     localStorage.setItem("current_dataset_path",this_node_filepath);	     
+	     //localStorage.setItem("current_dataset_path",this_node_filepath);	     
 	     //console.log("Tree")
 	     //console.log(this_node_filepath)
 	     //send to /service/this_node_filepath
@@ -121,6 +122,7 @@
 	     //console.log(fulltree)
 	     //
 	     this.loopRecursParent(node);
+	     this.nodeCheckedUnchecked();
 	     //
 	 },
 	 checkbox_endnode_clicked(i,event){
@@ -168,7 +170,7 @@
 	     //set false
 	     node.indeterminate = false;
 	     this.loopRecursParent(node);
-	     
+	     this.nodeCheckedUnchecked();
 	     
 
 
@@ -244,6 +246,7 @@
 		 //console.log(this.tree[item].name)
 		 this.tree[item].checked = false;
 	     }
+	     this.nodeCheckedUnchecked();
 	 },
 	 uncheckAll(tree){
 	     //console.log("TreeParent -> uncheckAll")
@@ -258,6 +261,13 @@
 		     }
 		     this.uncheckAll(tree[item]);
 		 }
+	     }
+	     this.nodeCheckedUnchecked();
+	 },
+	 nodeCheckedUnchecked(){
+	     //console.log("nodeCheckedUnchecked")
+	     if (this.localstoragekey != undefined){
+		 localStorage.setItem(this.localstoragekey,JSON.stringify(this.fulltree));
 	     }
 	 },
      }
