@@ -271,7 +271,7 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 
 ```
 
-## Options
+## Options (Props)
 
 - *treeClickMode*  
   Can take the values *multi* to allow multiple nodes to be checked,
@@ -288,6 +288,13 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
   ```javascript
 	  this.fulltree = JSON.parse(localStorage.getItem(this.localstoragekey));
   ```
+
+## Events (Emits)
+
+- *@getCheckedNodesEmit="receiveCheckedNodes"*  
+  After the method *getCheckedNodes* is fired, the checked nodes are
+  returned via the *@getCheckedNodesEmit*, which executes the method
+  receiveCheckedNodes and transfers the nodes in the parameter *checkedNodes*.
 
 
 ## Methods
