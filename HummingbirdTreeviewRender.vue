@@ -199,6 +199,7 @@
 	     //build node without eval, get parent from bottom to top
 	     //and check every level
 	     for (let i=L; i>=1; i--){
+		 //console.log(i)
 		 if (i == 1){
 		     var parents = this.fulltree[node.parents[0]];
 		 }

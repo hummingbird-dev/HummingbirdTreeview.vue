@@ -50,7 +50,8 @@ trees. The key is to create a simple Javascript array of objects:
 		 "name": "Warner Bros.",
 		 "collapsed": false,
 		 "visible": true,
-		 "checked" : false,
+	     "checkbox": true,
+         "checked" : false,
 		 "tooltip" : "",
 		 "filepath" : "",		 
 	     },
@@ -116,6 +117,49 @@ used for every item.
 **Important: At the moment hierarchical depth maximum is "---",
 i.e. two parent sub-nodes below the base node. The depth maximum can
 easily be extended, just let me know if you need it.**
+
+
+## Attributes
+
+- *name*  
+  The name of the node with leading hyphens, that indicate the indenting or level of that node.
+  
+- *collapsed*  
+  Can be *true* (default) or *false* and indicates if a parent node
+  has the leading collapsed or expanded chevron symbol. Use that
+  together with the following *visible* attribute.
+  
+- *visible*  
+  Can be *true* or *false* (default) and indicates if the subnodes of
+  a parent are visible, i.e. actually expanded or not visible
+  (collapsed). Remember to set the above *collapsed* attribute correctly.
+  
+- *checkbox*  
+  Can be *true* (default), showing the checkboxes or *false*, hiding the checkboxes.
+  
+- *checked*  
+  Can be *true* or *false* (default) indicating the status of a checkbox.
+  
+- *tooltip*  
+  Is a string, to add a tooltip to a node that is shown on mouse hover.
+  
+- *filepath*  
+  A string that is interpreted as a link and can only be added to
+  endnodes, i.e. not to parent nodes. A click on such a endnode with
+  attribute *filepath* triggers the link.
+
+
+## Tipps and Tricks
+
+- In the case of asynchroneous creation of input data, make sure that
+  the input data variable (*tree*) exists, prior to initialization of
+  the *<hummingbird-treeview ....>*. Typically one can use a variable
+  like *isLoaded* with value *false* and set it to *true* if the *tree* has been created.
+  ```javascript
+	  <div v-if="isLoaded">
+     	  <hummingbird-treeview ....>
+  ```
+
 
 ## Usage
 
@@ -288,6 +332,17 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
   ```javascript
 	  this.fulltree = JSON.parse(localStorage.getItem(this.localstoragekey));
   ```
+  If you don't want to use that, just leave it out or set
+  ```javascript
+	  this.localstoragekey = undefined;
+  ```
+  or delete the localStorage
+  ```javascript
+     localStorage.removeItem(this.localstoragekey);
+  ```
+  
+  
+  
 
 ## Events (Emits)
 
