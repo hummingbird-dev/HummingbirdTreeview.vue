@@ -327,8 +327,12 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
   parent nodes.
   
 - *localstoragekey*  
-  If provided, the full tree structure is saved in the localstorage
-  and can be accessed globally via that key:
+  If provided, the full tree structure is saved in the localStorage
+  and also taken from the localStorage.  **Important**: Hence the
+  treeview is taken from cache and not created freshly if you change the input data!
+  If you change your input data and need to rebuild the tree see further below.  
+    
+  The tree can be accessed globally via that key:
   ```javascript
 	  this.fulltree = JSON.parse(localStorage.getItem(this.localstoragekey));
   ```
@@ -336,7 +340,7 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
   ```javascript
 	  this.localstoragekey = undefined;
   ```
-  or delete the localStorage
+  or delete the localStorage to rebuild the tree.
   ```javascript
      localStorage.removeItem(this.localstoragekey);
   ```
