@@ -52,7 +52,8 @@ trees. The key is to create a simple Javascript array of objects:
 		 "visible": true,
 	     "checkbox": true,
          "checked" : false,
-		 "tooltip" : "",
+	     "value" : "",
+         "tooltip" : "",
 		 "filepath" : "",		 
 	     },
 	     {
@@ -140,6 +141,9 @@ easily be extended, just let me know if you need it.**
 - *checked*  
   Can be *true* or *false* (default) indicating the status of a checkbox.
   
+- *value*__
+  A string to assign a value to a node.
+
 - *tooltip*  
   Is a string, to add a tooltip to a node that is shown on mouse hover.
   
@@ -150,6 +154,9 @@ easily be extended, just let me know if you need it.**
 
 
 ## Tipps and Tricks
+
+- To save the state of the treeview permanentely, set the 
+  *localstoragekey* option. See below (under options) for more details.
 
 - In the case of asynchroneous creation of input data, make sure that
   the input data variable (*tree*) exists, prior to initialization of
@@ -239,6 +246,7 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 		 "collapsed": false,
 		 "visible": true,
 		 "checked" : false,
+		 "value" : "1",
 		 "tooltip" : "",
 		 "filepath" : "",		 
 	     },
@@ -327,6 +335,7 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
   parent nodes.
   
 - *localstoragekey*  
+  This is used to save the state of the treeview permanentely.
   If provided, the full tree structure is saved in the localStorage
   and also taken from the localStorage.  **Important**: Hence the
   treeview is taken from cache and not created freshly if you change the input data!

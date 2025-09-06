@@ -66,27 +66,31 @@
      },
      mounted: function() {
 
+
+	 //if tree exist in localstorage just return it
+	 //console.log(this.localstoragekey)
+	 if (this.localstoragekey != undefined && this.localstoragekey != ""){
+	     if (localStorage.getItem(this.localstoragekey) != "" && localStorage.getItem(this.localstoragekey) != null){
+		 //console.log("Hummingbirdtreeview : "+this.localstoragekey+" exists!")
+		 this.fulltree = JSON.parse(localStorage.getItem(this.localstoragekey));
+		 return;
+	     }
+	 }
+
+	 
 	 //create the full tree structure
 	 this.create_full_tree();
-	 //put tree into localStorage
-	 if (this.localstoragekey != undefined){
-	     localStorage.setItem(this.localstoragekey,JSON.stringify(this.fulltree));
-	 }
 	 //identify endnodes
 	 this.find_endnodes(this.fulltree);
+	 //put tree into localStorage
+	 if (this.localstoragekey != undefined && this.localstoragekey != ""){
+	     localStorage.setItem(this.localstoragekey,JSON.stringify(this.fulltree));
+	 }
 
      },
      methods: {
 	 create_full_tree(){
 
-	     //if tree exist in localstorage just return it
-	     if (this.localstoragekey != undefined){
-		 if (localStorage.getItem(this.localstoragekey) != "" && localStorage.getItem(this.localstoragekey) != null){
-		     //console.log("Hummingbirdtreeview : "+this.localstoragekey+" exists!")
-		     this.fulltree = JSON.parse(localStorage.getItem(this.localstoragekey));
-		     return;
-		 }
-	     }
 
 
 	     //node template
@@ -98,6 +102,7 @@
 	     let node_template = {
 		 "name":"",
 		 "level": 0,
+		 "value": "",
 		 "collapsed" : true,
 		 "visible" : false,
 		 "checkbox" : true,
@@ -129,13 +134,17 @@
 		 if (visible == undefined){
 		     visible = false;
 		 }
+		 let value = this.tree[k].value;
+		 if (value == undefined){
+		     value = false;
+		 }
 		 let checked = this.tree[k].checked;
 		 if (checked == undefined){
 		     checked = false;
 		 }
 		 let checkbox = this.tree[k].checkbox;
 		 if (checkbox == undefined){
-		     checkbox = false;
+		     checkbox = true;
 		 }
 		 let tooltip = this.tree[k].tooltip;
 		 if (tooltip == undefined){
@@ -162,6 +171,7 @@
 		     this.fulltree[name[0]].name = name[0];
 		     this.fulltree[name[0]].collapsed = collapsed;
 		     this.fulltree[name[0]].level = level;
+		     this.fulltree[name[0]].value = value;
 		     this.fulltree[name[0]].checked = checked;
 		     this.fulltree[name[0]].checkbox = checkbox;
 		     this.fulltree[name[0]].visible = true;
@@ -205,6 +215,7 @@
 			     this.fulltree[parents[0]].children[parents.slice(-1,)].name = name[0];
 			     this.fulltree[parents[0]].children[parents.slice(-1,)].collapsed = collapsed;
 			     this.fulltree[parents[0]].children[parents.slice(-1,)].level = level;
+			     this.fulltree[parents[0]].children[parents.slice(-1,)].value = value;
 			     this.fulltree[parents[0]].children[parents.slice(-1,)].visible = visible;
 			     this.fulltree[parents[0]].children[parents.slice(-1,)].checked = checked;
 			     this.fulltree[parents[0]].children[parents.slice(-1,)].checkbox = checkbox;
@@ -216,6 +227,7 @@
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)] = Object.assign({}, xnode_template);
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].name = name[0];			  
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].level = level;
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].value = value;
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].collapsed = collapsed;
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].visible = visible;
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].checked = checked;
@@ -229,6 +241,7 @@
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].name = name[0];			    
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].level = level;
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].visible = visible;
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].value = value;
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].checked = checked;
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].checkbox = checkbox;
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].tooltip = tooltip;  
@@ -240,6 +253,7 @@
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents_next[2]].children[parents.slice(-1,)] = Object.assign({}, xnode_template);
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents_next[2]].children[parents.slice(-1,)].name = name[0];			    
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents_next[2]].children[parents.slice(-1,)].level = level;
+			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents_next[2]].children[parents.slice(-1,)].value = value;
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents_next[2]].children[parents.slice(-1,)].visible = visible;
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents_next[2]].children[parents.slice(-1,)].checked = checked;
 			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents_next[2]].children[parents.slice(-1,)].checkbox = checkbox;
