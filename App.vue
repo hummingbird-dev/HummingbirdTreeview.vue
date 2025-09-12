@@ -8,22 +8,20 @@
 		    HummingbirdTreeview.vue 
 		</div>
 		<div class="">
-		    <hummingbird-treeview :tree="tree" :treeClickMode="treeClickMode" :checkParents="checkParents" ref="hummingbirdtreeviewref" @getCheckedNodesEmit="receiveCheckedNodes" :localstoragekey="localstoragekey">
+		    <hummingbird-treeview :tree="tree" :treeClickMode="treeClickMode" :checkParents="checkParents" ref="hummingbirdtreeviewref"  :localstoragekey="localstoragekey" @nodeCheckedUnchecked="nodeCheckedUnchecked">
 		    </hummingbird-treeview>
 		</div>
-		<div class="pt-16">
-		    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @click="getCheckedNodes('endnodes')">
-			<!-- getCheckedNodes('endnodes') -->
-			<!-- getCheckedNodes('parents') -->
-			<!-- getCheckedNodes('all') -->
-			getCheckedNodes
-		    </button>
+		<div class="pt-10 text-blue-500 font-bold">
+		    Checked Items:
+                    {{ this.tree_num_checked }} of {{ this.tree_num_all }}
 		</div>
-		<div class="pt-16">
-		    <ul class="">	    
-			<li v-for="i of checkedEndNodes">
-			    {{ i.name }}
-			</li>
+		<div class="pt-4">
+		    <ul class="list-disc">
+			<div v-for="i of flatEndnodes">
+			    <li v-if="i.checked">
+				{{ i.name }}
+			    </li>
+			</div>
 		    </ul>
 		</div>
 	    </div>
@@ -46,27 +44,20 @@
 	     tree: [],
 	     treeClickMode: "multi", //single, multi
 	     checkParents: true, //true, false
-	     checkedEndNodes: [],
-	     localstoragekey: "humtree",
+	     localstoragekey: "humtree_20",
+	     tree_num_all: 0,
+	     tree_num_checked: 0,
+	     flatEndnodes: {},
 	 }
      },
      props: {
      },
      created(){
-
-	 //create nested tree structure array of objects
-	 //at the moment, the only needed property is
-	 //name, later more properties will be
-	 //available, but not yet implemented
 	 //
-	 //create the tree manually or automatically
-	 //with additional functions/logic
-	 //
-
 	 this.tree = [
 	     {
 		 "name": "Warner Bros.",
-		 "collapsed": false,
+		 "collapsed": true,
 		 "visible": true,
 		 "checked" : false,
 		 "tooltip" : "",
@@ -89,7 +80,6 @@
 	     },
 	     {
 		 "name": "-The Shawshank Redemption",
-		 "visible": true,
 	     },
 	     {
 		 "name": "--Tim Robbins",
@@ -126,19 +116,15 @@
      mounted: function() {
      },
      methods: {
-	 getCheckedNodes(mode){
-	     //mode: all      -> returns all checked nodes
-	     //      endnodes -> return only checked endnodes
-	     //console.log("getCheckedNodes")
-	     const callGetCheckedNodes   = this.$refs.hummingbirdtreeviewref;
-	     callGetCheckedNodes.getCheckedNodes(mode);
-	     
+	 nodeCheckedUnchecked(){
+             if (localStorage.getItem(this.localstoragekey+"_info") != null && localStorage.getItem(this.localstoragekey+"_info") != "" ){
+                 let info = JSON.parse(localStorage.getItem(this.localstoragekey+"_info"));
+                 //console.log(info)
+                 this.tree_num_checked = info.numchecked;
+                 this.tree_num_all = info.num_endnodes;
+		 this.flatEndnodes = info.flatEndnodes;
+             }
 	 },
-	 receiveCheckedNodes(checkedNodes){
-	     //console.log("receiveCheckedNodes")
-	     //console.log(checkedNodes)
-	     this.checkedEndNodes = checkedNodes;
-	 }
      }
  }
 </script>

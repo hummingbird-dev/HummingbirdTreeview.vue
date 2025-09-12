@@ -24,7 +24,7 @@
 
 		<span v-if="i.endnode == false" class="font-bold  whitespace-nowrap cursor-pointer hover:text-white hover:bg-black" @click.self="toggleNode">{{i.name}}</span>
 
-		<HummingbirdTreeviewRender :tree="i.children" :fulltree="fulltree" :treeClickMode="treeClickMode" :checkParents="checkParents" v-if="i.children" @uncheckAll="uncheckAll(this.fulltree)" :localstoragekey="localstoragekey"/>
+		<HummingbirdTreeviewRender :tree="i.children" :fulltree="fulltree" :treeClickMode="treeClickMode" :checkParents="checkParents" v-if="i.children" @uncheckAll="uncheckAll(this.fulltree)" :localstoragekey="localstoragekey" @nodeCheckedUnchecked="nodeCheckedUnchecked" />
 
 	    </li>
 	</ul>
@@ -48,7 +48,7 @@
 	     last_node: {},
 	     cursor_style: "cursor-pointer",
 	     hover: false,	     
-	     init: false,
+	     init: true,
 	 }
      },
      props: {
@@ -58,14 +58,36 @@
 	 checkParents: Boolean,
 	 localstoragekey: String,
      },
+     emits: [
+	 'nodeCheckedUnchecked',
+     ],
      created(){
+	 //console.log("created")
 	 if (this.checkParents == false){
 	     this.cursor_style =  "cursor-not-allowed";
 	 }
+	 //
+	 /* if (this.init){
+	    console.log(this.fulltree)
+	    let base_node = Object.values(this.fulltree)[0];
+	    console.log(base_node)
+	    this.loopRecursParent(base_node);
+	    this.nodeCheckedUnchecked();
+	    this.init = false;
+	    }*/
      },
      updated(){
+	 //console.log("updated")
+	 //console.log(this.init)
+	 if (this.init){
+	     let base_node = Object.values(this.fulltree)[0];
+	     this.loopRecursParent(base_node);
+	     this.nodeCheckedUnchecked();
+	     this.init = false;
+	 }
      },
      mounted: function() {
+	 //console.log("mounted")
      },
      methods: {
 	 toggleNode(e) {
@@ -89,6 +111,7 @@
 	 },
 	 selectNode(node,e) {
 	     //
+	     //console.log("selectNode")
 	     //this is a click on a endnode
 	     //console.log("endnode")
 	     //
@@ -104,11 +127,17 @@
 		 
 	     }
 	     //
-	     //console.log(tree)
+	     
+
+             //console.log(tree)
 	     //if this node has cjeckbox == true -> toggle
 	     if (node.checkbox){		 
 		 node.checked = (node.checked == false);
 	     }
+
+	     //
+
+
 	     //console.log(e.currentTarget.parentElement.parentElement.dataset.filepath)
 	     let this_node_filepath = e.currentTarget.parentElement.parentElement.dataset.filepath;
 
@@ -121,7 +150,14 @@
 	     //console.log("fulltree")
 	     //console.log(fulltree)
 	     //
+
+	     //test
+
+	     //
+
+
 	     this.loopRecursParent(node);
+	     //console.log("select node")
 	     this.nodeCheckedUnchecked();
 	     //
 	 },
@@ -168,6 +204,7 @@
 	     this.loopRecurs(node,that,that_node_checked);
 
 	     //set false
+	     //console.log("check parent")
 	     node.indeterminate = false;
 	     this.loopRecursParent(node);
 	     this.nodeCheckedUnchecked();
@@ -192,27 +229,41 @@
 	     }
 	 },
 	 loopRecursParent(node){
-	     let L = node.parents.length;
-	     if (L == 0){
+	     //console.log("loopRecursParent")
+	     //console.log(node)
+	     if (node == undefined){
 		 return;
 	     }
+
+	     let L = node.parents.length;
+	     //console.log("L="+L)
+	     
 	     //build node without eval, get parent from bottom to top
 	     //and check every level
-	     for (let i=L; i>=1; i--){
-		 //console.log(i)
+	     for (let i=L; i>=0; i--){
+		 //---------------------------------------------------//
+		 if (i == 0 && L == 0){
+		     var parents = node;
+		 }
+		 //
 		 if (i == 1){
+		     //console.log(node.parents[0])
 		     var parents = this.fulltree[node.parents[0]];
 		 }
-		 if (i == 2){
-		     var parents = this.fulltree[node.parents[0]].children[node.parents[1]];
+		 //
+		 //build parents
+		 if (i>1){
+		     var parents = this.fulltree[node.parents[0]];
+		     for (let j=2; j<=i; j++){
+			 parents = parents.children[node.parents[j-1]];
+		     }
 		 }
-		 if (i == 3){
-		     var parents = this.fulltree[node.parents[0]].children[node.parents[1]].children[node.parents[2]];
-		 }
+		 //---------------------------------------------------//
+		 //
 		 //
 		 let childrenLength = Object.keys(parents.children).length;
 		 //count how many children are checked
-		 let counter = 0
+		 let counter = 0;
 		 let indeterminate_counter = 0
 		 for (let child in parents.children){
 		     if (parents.children[child].checked){
@@ -266,10 +317,11 @@
 	     this.nodeCheckedUnchecked();
 	 },
 	 nodeCheckedUnchecked(){
-	     //console.log("nodeCheckedUnchecked")
+	     //console.log("nodeCheckedUnchecked in Render")
 	     if (this.localstoragekey != undefined){
 		 localStorage.setItem(this.localstoragekey,JSON.stringify(this.fulltree));
 	     }
+	     this.$emit('nodeCheckedUnchecked');
 	 },
      }
  };

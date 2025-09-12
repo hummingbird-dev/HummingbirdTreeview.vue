@@ -1,5 +1,5 @@
 <template>
-    <hummingbird-treeview-render :tree="fulltree" :fulltree="fulltree" :treeClickMode="treeClickMode" :checkParents="checkParents" :localstoragekey="localstoragekey"/>
+    <hummingbird-treeview-render :tree="fulltree" :fulltree="fulltree" :treeClickMode="treeClickMode" :checkParents="checkParents" :localstoragekey="localstoragekey" @nodeCheckedUnchecked="nodeCheckedUnchecked" />
 </template>
 
 <style>
@@ -8,14 +8,13 @@
  .tooltip {
      position: relative;
      display: inline-block;
-     z-index: 1;
      /* border-bottom: 1px dotted black; */ /* If you want dots under the hoverable text */
  }
 
  /* Tooltip text */
  .tooltip .tooltiptext {
      visibility: hidden;
-     width: 120px;
+     width: 200px;
      background-color: #192434; /* bg-gray-800 */
      color: #fff;
      text-align: center;
@@ -50,10 +49,12 @@
      },
      emits: [
 	 'getCheckedNodesEmit',
+	 'nodeCheckedUnchecked',
      ],
      data() {
 	 return {
 	     fulltree: {},
+	     info: {'numchecked':0, 'num_allnodes':0, 'num_endnodes':0,'flatEndnodes':{}},	     
 	 }
      },
      props: {
@@ -67,25 +68,31 @@
      mounted: function() {
 
 
+	 
 	 //if tree exist in localstorage just return it
-	 //console.log(this.localstoragekey)
-	 if (this.localstoragekey != undefined && this.localstoragekey != ""){
-	     if (localStorage.getItem(this.localstoragekey) != "" && localStorage.getItem(this.localstoragekey) != null){
-		 //console.log("Hummingbirdtreeview : "+this.localstoragekey+" exists!")
-		 this.fulltree = JSON.parse(localStorage.getItem(this.localstoragekey));
-		 return;
+	 //console.log(this.localstoragekey)	 
+	 //for testing false for production true
+	 if (true){ 
+	     if (this.localstoragekey != undefined && this.localstoragekey != ""){
+		 if (localStorage.getItem(this.localstoragekey) != "" && localStorage.getItem(this.localstoragekey) != null){
+		     //console.log("Hummingbirdtreeview : "+this.localstoragekey+" exists!")
+		     this.fulltree = JSON.parse(localStorage.getItem(this.localstoragekey));
+		     return;
+		 }
+		 //set info object only on init if localstoragekey does not exist
+		 localStorage.setItem(this.localstoragekey+"_info",JSON.stringify(this.info));
 	     }
 	 }
+
+	 
+
 
 	 
 	 //create the full tree structure
 	 this.create_full_tree();
 	 //identify endnodes
-	 this.find_endnodes(this.fulltree);
-	 //put tree into localStorage
-	 if (this.localstoragekey != undefined && this.localstoragekey != ""){
-	     localStorage.setItem(this.localstoragekey,JSON.stringify(this.fulltree));
-	 }
+	 this.find_endnodes(this.fulltree,this.num_endnodes,this.info);
+	 
 
      },
      methods: {
@@ -209,74 +216,67 @@
 
 			 let xnode_template = JSON.parse(JSON.stringify(node_template));
 
-			 
+			 //set level 1 after base
 			 if (L_parents_next == 0){
-			     this.fulltree[parents[0]].children[parents.slice(-1,)] = Object.assign({}, xnode_template);
-			     this.fulltree[parents[0]].children[parents.slice(-1,)].name = name[0];
-			     this.fulltree[parents[0]].children[parents.slice(-1,)].collapsed = collapsed;
-			     this.fulltree[parents[0]].children[parents.slice(-1,)].level = level;
-			     this.fulltree[parents[0]].children[parents.slice(-1,)].value = value;
-			     this.fulltree[parents[0]].children[parents.slice(-1,)].visible = visible;
-			     this.fulltree[parents[0]].children[parents.slice(-1,)].checked = checked;
-			     this.fulltree[parents[0]].children[parents.slice(-1,)].checkbox = checkbox;
-			     this.fulltree[parents[0]].children[parents.slice(-1,)].tooltip = tooltip;
-			     this.fulltree[parents[0]].children[parents.slice(-1,)].filepath = filepath;
-			     this.fulltree[parents[0]].children[parents.slice(-1,)].parents = new_parents;
+				 this.fulltree[parents[0]].children[parents.slice(-1,)] = Object.assign({}, xnode_template);
+				 this.fulltree[parents[0]].children[parents.slice(-1,)].name = name[0];
+				 this.fulltree[parents[0]].children[parents.slice(-1,)].collapsed = collapsed;
+				 this.fulltree[parents[0]].children[parents.slice(-1,)].level = level;
+				 this.fulltree[parents[0]].children[parents.slice(-1,)].value = value;
+				 this.fulltree[parents[0]].children[parents.slice(-1,)].visible = visible;
+				 this.fulltree[parents[0]].children[parents.slice(-1,)].checked = checked;
+				 this.fulltree[parents[0]].children[parents.slice(-1,)].checkbox = checkbox;
+				 this.fulltree[parents[0]].children[parents.slice(-1,)].tooltip = tooltip;
+				 this.fulltree[parents[0]].children[parents.slice(-1,)].filepath = filepath;
+				 this.fulltree[parents[0]].children[parents.slice(-1,)].parents = new_parents;
 			 }
-			 if (L_parents_next == 1){
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)] = Object.assign({}, xnode_template);
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].name = name[0];			  
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].level = level;
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].value = value;
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].collapsed = collapsed;
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].visible = visible;
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].checked = checked;
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].checkbox = checkbox;			  
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].tooltip = tooltip;	
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].filepath = filepath;
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents.slice(-1,)].parents = new_parents;
+			 //
+			 //go into loop over L_parents_next
+			 let parent_obj = this.fulltree[parents[0]];
+			 //build children node
+			 for (let j=0; j<=(L_parents_next-1); j++){
+			     parent_obj = parent_obj.children[parents_next[j]];
 			 }
-			 if (L_parents_next == 2){
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)] = Object.assign({}, xnode_template);
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].name = name[0];			    
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].level = level;
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].visible = visible;
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].value = value;
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].checked = checked;
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].checkbox = checkbox;
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].tooltip = tooltip;  
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].filepath = filepath;
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].collapsed = collapsed;			    
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents.slice(-1,)].parents = new_parents;
-			 }
-			 if (L_parents_next == 3){
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents_next[2]].children[parents.slice(-1,)] = Object.assign({}, xnode_template);
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents_next[2]].children[parents.slice(-1,)].name = name[0];			    
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents_next[2]].children[parents.slice(-1,)].level = level;
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents_next[2]].children[parents.slice(-1,)].value = value;
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents_next[2]].children[parents.slice(-1,)].visible = visible;
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents_next[2]].children[parents.slice(-1,)].checked = checked;
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents_next[2]].children[parents.slice(-1,)].checkbox = checkbox;
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents_next[2]].children[parents.slice(-1,)].tooltip = tooltip;  
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents_next[2]].children[parents.slice(-1,)].filepath = filepath;
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents_next[2]].children[parents.slice(-1,)].collapsed = collapsed;			    
-			     this.fulltree[parents[0]].children[parents_next[0]].children[parents_next[1]].children[parents_next[2]].children[parents.slice(-1,)].parents = new_parents;
-			 }
+			 //initiate children node
+			 parent_obj.children[parents.slice(-1,)] = Object.assign({}, xnode_template);
+			 //fill children node			 
+			 parent_obj.children[parents.slice(-1,)].name = name[0];
+			 parent_obj.children[parents.slice(-1,)].collapsed = collapsed;
+			 parent_obj.children[parents.slice(-1,)].level = level;
+			 parent_obj.children[parents.slice(-1,)].value = value;
+			 parent_obj.children[parents.slice(-1,)].visible = visible;
+			 parent_obj.children[parents.slice(-1,)].checked = checked;
+			 parent_obj.children[parents.slice(-1,)].checkbox = checkbox;
+			 parent_obj.children[parents.slice(-1,)].tooltip = tooltip;
+			 parent_obj.children[parents.slice(-1,)].filepath = filepath;
+			 parent_obj.children[parents.slice(-1,)].parents = new_parents;
+			 //
+			 //
 		     }
 		 }
 	     }
 	 },
-	 find_endnodes(node){
+	 find_endnodes(node,num_endnodes,info){
 	     for (var k in node) {
 		 if (typeof node[k] === 'object' && node[k] !== null) {
 		     if (node[k].name != undefined){
-			 //console.log("find_endnodes="+k)
-			if (Object.keys(node[k].children).length === 0){
+			 //console.log(node[k])
+			 info.num_allnodes++;
+			 if (Object.keys(node[k].children).length === 0){
+			     //console.log(node[k].name)
 			     node[k].endnode = true;
-			    //console.log("endnode="+node[k].name)
+			     info.num_endnodes++;
+			     info.flatEndnodes[node[k].name] = {"name":node[k].name, "checked":false};
+			     if (node[k].checked){				 
+				 //console.log("checked="+node[k].name)
+				 info.numchecked++;
+				 info.flatEndnodes[node[k].name].checked = true;
+			     }
+			     //console.log("endnode="+node[k].name)
+			     //console.log(num_endnodes)
 			 }			 
 		     }
-		     this.find_endnodes(node[k]);
+		     this.find_endnodes(node[k],num_endnodes,info);
 		 }		 
 	     }
 	 },
@@ -313,6 +313,7 @@
 	     }
 
 	 },
+	 //depreciated
 	 getCheckedNodes(mode){
 	     //console.log("getCheckedNodes in HummingbirdTreeview")
 	     //console.log(this.fulltree)
@@ -327,7 +328,7 @@
 	     loopRecurs(this.fulltree,checkedNodes,mode);
 
 	     //console.log(checkedNodes)
-	     console.log("emit")
+	     //console.log("emit")
 	     this.$emit('getCheckedNodesEmit',checkedNodes);
 
 	     
@@ -356,6 +357,26 @@
 		     }
 		 }
 	     };
+	 },
+	 nodeCheckedUnchecked(num){
+	     //console.log("HummingBirdTreeview.vue nodeCheckedUnchecked")
+	     
+	     this.info.num_allnodes = 0;
+	     this.info.num_endnodes = 0;
+	     this.info.numchecked = 0;
+	     
+	     this.find_endnodes(this.fulltree,this.num_endnodes,this.info);
+
+
+
+	     //put tree into localStorage
+	     if (this.localstoragekey != undefined && this.localstoragekey != ""){
+		 localStorage.setItem(this.localstoragekey,JSON.stringify(this.fulltree));
+                 localStorage.setItem(this.localstoragekey+"_info",JSON.stringify(this.info));
+	     }
+
+	     this.$emit('nodeCheckedUnchecked');
+
 	 },
      },
  }

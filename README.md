@@ -9,7 +9,6 @@ A powerful and fast Vue.js treeview component.
 - Display hierarchical tree structures.
 - Simple input data structure.
 - Tri-state logic.
-- Interactively check, uncheck, collapse, expand.
 - Get checked items programmatically.
 - ... and more
 
@@ -108,16 +107,12 @@ trees. The key is to create a simple Javascript array of objects:
 The hyphens indicate the level of indenting. It is important to note
 that down the tree the next node can maximal be indented by one level,
 i.e. it can only have one hyphen more than the node before (e.g. from
-Goodfellas to Robert De Niro). In contrast up the treeview,
+Goodfellas to Robert De Niro). In contrast up the tree,
 arbitrarily large jumps of indention are possible, i.e. the next node
 can have much less hyphens than the node before (e.g. from Morgan Freeman to Paramount).
 
 The attribute "name" is mandatory, all others are optional and can be
 used for every item.
-
-**Important: At the moment hierarchical depth maximum is "---",
-i.e. two parent sub-nodes below the base node. The depth maximum can
-easily be extended, just let me know if you need it.**
 
 
 ## Attributes
@@ -155,7 +150,7 @@ easily be extended, just let me know if you need it.**
 
 ## Tipps and Tricks
 
-- To save the state of the treeview permanentely, set the 
+- To save the state of the treeview permanentely, and to retrieve some information on the state, set the 
   *localstoragekey* option. See below (under options) for more details.
 
 - In the case of asynchroneous creation of input data, make sure that
@@ -186,22 +181,20 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 		    HummingbirdTreeview.vue 
 		</div>
 		<div class="">
-		    <hummingbird-treeview :tree="tree" :treeClickMode="treeClickMode" :checkParents="checkParents" ref="hummingbirdtreeviewref" @getCheckedNodesEmit="receiveCheckedNodes" :localstoragekey="localstoragekey">
+		    <hummingbird-treeview :tree="tree" :treeClickMode="treeClickMode" :checkParents="checkParents" ref="hummingbirdtreeviewref"  :localstoragekey="localstoragekey" @nodeCheckedUnchecked="nodeCheckedUnchecked">
 		    </hummingbird-treeview>
 		</div>
-		<div class="pt-16">
-		    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @click="getCheckedNodes('endnodes')">
-			<!-- getCheckedNodes('endnodes') -->
-			<!-- getCheckedNodes('parents') -->
-			<!-- getCheckedNodes('all') -->
-			getCheckedNodes
-		    </button>
+		<div class="pt-10 text-blue-500 font-bold">
+		    Checked Items:
+                    {{ this.tree_num_checked }} of {{ this.tree_num_all }}
 		</div>
-		<div class="pt-16">
-		    <ul class="">	    
-			<li v-for="i of checkedEndNodes">
-			    {{ i.name }}
-			</li>
+		<div class="pt-4">
+		    <ul class="list-disc">
+			<div v-for="i of flatEndnodes">
+			    <li v-if="i.checked">
+				{{ i.name }}
+			    </li>
+			</div>
 		    </ul>
 		</div>
 	    </div>
@@ -213,7 +206,7 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 
 <script>
 
- import HummingbirdTreeviewRender from "hummingbirdtreeview.vue/HummingbirdTreeviewRender.vue";
+ import HummingbirdTreeview from './components/HummingbirdTreeview.vue'
  
  export default {
      components: {
@@ -224,29 +217,22 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 	     tree: [],
 	     treeClickMode: "multi", //single, multi
 	     checkParents: true, //true, false
-	     checkedEndNodes: [],
-		 localstoragekey: "humtree",
+	     localstoragekey: "humtree_20",
+	     tree_num_all: 0,
+	     tree_num_checked: 0,
+	     flatEndnodes: {},
 	 }
      },
      props: {
      },
      created(){
-
-	 //create nested tree structure array of objects
-	 //with properties
-	 //name is mandatory, all others are optional
 	 //
-	 //create the tree manually or automatically
-	 //with additional functions/logic
-	 //
-
 	 this.tree = [
 	     {
 		 "name": "Warner Bros.",
-		 "collapsed": false,
+		 "collapsed": true,
 		 "visible": true,
 		 "checked" : false,
-		 "value" : "1",
 		 "tooltip" : "",
 		 "filepath" : "",		 
 	     },
@@ -303,24 +289,18 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
      mounted: function() {
      },
      methods: {
-	 getCheckedNodes(mode){
-	     //mode: all      -> returns all checked nodes
-	     //      endnodes -> return only checked endnodes
-         //      parents  -> return only checked parent nodes
-         //console.log("getCheckedNodes")
-	     const callGetCheckedNodes   = this.$refs.hummingbirdtreeviewref;
-	     callGetCheckedNodes.getCheckedNodes(mode);
-	     
-	 },
-	 receiveCheckedNodes(checkedNodes){
-	     //console.log("receiveCheckedNodes")
-	     //console.log(checkedNodes)
-	     this.checkedEndNodes = checkedNodes;
-	 }
+	    nodeCheckedUnchecked(){
+             if (localStorage.getItem(this.localstoragekey+"_info") != null && localStorage.getItem(this.localstoragekey+"_info") != "" ){
+                 let info = JSON.parse(localStorage.getItem(this.localstoragekey+"_info"));
+                 //console.log(info)
+                 this.tree_num_checked = info.numchecked;
+                 this.tree_num_all = info.num_endnodes;
+		         this.flatEndnodes = info.flatEndnodes;
+             }
+	    },
      }
  }
 </script>
-
 ```
 
 ## Options (Props)
@@ -353,33 +333,33 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
   ```javascript
      localStorage.removeItem(this.localstoragekey);
   ```
-  
-  
+- *Info*__
+  Additionally some state information is saved in the localStorage and can be retrieved. 
+  ```javascript
+	  let info = JSON.parse(localStorage.getItem(this.localstoragekey+"_info"));
+  ```
+  The *info* object provides four attributes:__
+  - *info.numchecked*: The number of checked endnodes.
+  - *info.num_endnodes*: The total number of endnodes.
+  - *info.num_allnodes*: The number of all nodes.
+  - *info.flatEndnodes*: An object, with the endnode names as keys and name, checked as values, e.g.
+	```javascript
+		"flatEndnodes": {
+		   "Lorrain Bracco": {"name":"Lorrain Bracco","checked",false},
+   		   "Ray Liotta": {"name":"Ray Liotta","checked",true},
+		   ...
+		   }
+	```
   
 
 ## Events (Emits)
 
-- *@getCheckedNodesEmit="receiveCheckedNodes"*  
-  After the method *getCheckedNodes* is fired, the checked nodes are
-  returned via the *@getCheckedNodesEmit*, which executes the method
-  receiveCheckedNodes and transfers the nodes in the parameter *checkedNodes*.
+- *@nodeCheckedUnchecked*__
+  Triggered after every check or uncheck action. Here, the localStorage info object can be retrieved e.g. to update
+  tree info.
 
 
 ## Methods
-
-- *getCheckedNodes(mode)*  
-  Triggers the retrieval of ckecked nodes. *mode* is a string and
-  options are getting "all", only "endnodes", or only "parents".
-  
-- *receiveCheckedNodes(checkedNodes)*  
-  *checkedEndNodes* is an array defined under *data* and takes up the
-  checked nodes for further processing. Attributes can be accessed by
-  e.g.
-  ```javascript
-	  <li v-for="i of checkedEndNodes">
-          {{ i.name }}
-      </li>
-  ```
 
 
 ## Project Setup
