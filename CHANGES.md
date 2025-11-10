@@ -1,5 +1,12 @@
 # CHANGES
 
+## 2025/10/10
+
+- Large changes from deep nodes to shallow nodes were not working. Fixed.
+
+- New optimized and fast logic for the *treeClickMode*=="single". 
+
+
 ## 2025/09/12
 
 - Extension to arbitrary deep tree structures.

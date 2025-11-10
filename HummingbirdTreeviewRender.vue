@@ -45,7 +45,6 @@
      data() {
 	 return {
 	     collapsed: true,
-	     last_node: {},
 	     cursor_style: "cursor-pointer",
 	     hover: false,	     
 	     init: true,
@@ -81,9 +80,12 @@
 	 //console.log(this.init)
 	 if (this.init){
 	     let base_node = Object.values(this.fulltree)[0];
-	     this.loopRecursParent(base_node);
-	     this.nodeCheckedUnchecked();
+	     if (!base_node.endnode){
+		 this.loopRecursParent(base_node);
+		 this.nodeCheckedUnchecked();
+	     }
 	     this.init = false;
+	     //localStorage.setItem("emptytree",JSON.stringify(this.fulltree));
 	 }
      },
      mounted: function() {
@@ -111,7 +113,10 @@
 	 },
 	 selectNode(node,e) {
 	     //
-	     //console.log("selectNode")
+	     /* console.log("selectNode")
+		console.log(node.name)
+		console.log(this)*/
+	     //console.log(node)
 	     //this is a click on a endnode
 	     //console.log("endnode")
 	     //
@@ -120,10 +125,40 @@
 	     //console.log(this.treeClickMode)
 	     if (this.treeClickMode == "single"){
 		 //this.uncheckAllOther()
+		 let last_node = JSON.parse(localStorage.getItem("last_node_"+this.localstoragekey));
+		 //console.log(last_node)
+		 if (last_node != undefined){
+		     //console.log("old_last_node="+last_node)
+		     //this.fulltree["Dirty_Dataset"].children["Dirty_Dataset.Data"].children["data"].checked = false;
+		     //check if last node exists in this fulltree
+		     if (this.fulltree[last_node[0]] != undefined){
+			 if (last_node.length == 1){
+			     this.fulltree[last_node[0]].checked = false;
+			 } else {
+			     //build node
+			     let parent_obj = this.fulltree[last_node[0]];
+			     parent_obj.checked = false;
+			     parent_obj.indeterminate = false;
+			     //console.log(parent_obj)
+			     //build children node
+			     for (let j=1; j<last_node.length; j++){
+				 //console.log(j)
+				 parent_obj = parent_obj.children[last_node[j]];
+				 parent_obj.checked = false;
+				 parent_obj.indeterminate = false;
+			     }
+			     //console.log(parent_obj)
+			 }
+		     }
+		     //console.log(last_node)
+		     //last_node.checked = true;
+		 }
+		 //console.log("old_last_node="+this.last_node.name)
 		 //this.last_node.checked = false;
 		 //emit
 		 //this.$emit('uncheckAll');
-		 this.uncheckAll(this.fulltree);
+		 //this.uncheckAll(this.fulltree);
+		 //this.fulltree = JSON.parse(localStorage.getItem("emptytree"));
 		 
 	     }
 	     //
@@ -135,13 +170,27 @@
 		 node.checked = (node.checked == false);
 	     }
 
+	     //console.log(node)
+	     //console.log(this.fulltree)
+	     //console.log(e)
 	     //
-
+	     //console.log(this)
 
 	     //console.log(e.currentTarget.parentElement.parentElement.dataset.filepath)
-	     let this_node_filepath = e.currentTarget.parentElement.parentElement.dataset.filepath;
+	     //let this_node_filepath = e.currentTarget.parentElement.parentElement.dataset.filepath;
+	     
+	     
+	     //this.last_node = node;
+	     //console.log(node.parents)
+	     if (this.treeClickMode == "single"){
+		 let last_node = JSON.parse(JSON.stringify(node.parents));
+		 last_node.push(node.name);
+		 localStorage.setItem("last_node_"+this.localstoragekey,JSON.stringify(last_node));
+	     }
+		 //console.log("new_last_node="+localStorage.getItem("last_node"))
+	     //this.fulltree["Dirty_Dataset"].children["Dirty_Dataset.Data"].children["data"].checked = true;
+	     //console.log(this.fulltree["Dirty_Dataset"].children["Dirty_Dataset.Data"].children["data"])
 
-	     this.last_node = node;
 	     //put into dlocalStorage
 	     //localStorage.setItem("current_dataset_path",this_node_filepath);	     
 	     //console.log("Tree")
@@ -154,9 +203,11 @@
 	     //test
 
 	     //
-
-
-	     this.loopRecursParent(node);
+	     //endnodes on level 1 -> have no parents
+	     //console.log(node.level)
+	     if (node.level>1){
+		 this.loopRecursParent(node);
+	     }
 	     //console.log("select node")
 	     this.nodeCheckedUnchecked();
 	     //
@@ -255,7 +306,9 @@
 		 if (i>1){
 		     var parents = this.fulltree[node.parents[0]];
 		     for (let j=2; j<=i; j++){
-			 parents = parents.children[node.parents[j-1]];
+			 //if (parents.children != undefined){
+			     parents = parents.children[node.parents[j-1]];
+			 //}
 		     }
 		 }
 		 //---------------------------------------------------//
@@ -306,6 +359,7 @@
 		 //console.log(tree[item].name)
 		 if (typeof tree[item] === 'object' && tree[item] !== null) {		     
 		     if (tree[item].name != undefined){
+		     //if (tree[item].checked){
 			 //console.log(tree[item].name)
 			 tree[item].checked = false
 			 tree[item].indeterminate = false

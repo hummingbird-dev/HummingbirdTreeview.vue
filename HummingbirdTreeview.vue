@@ -1,5 +1,5 @@
 <template>
-    <hummingbird-treeview-render :tree="fulltree" :fulltree="fulltree" :treeClickMode="treeClickMode" :checkParents="checkParents" :localstoragekey="localstoragekey" @nodeCheckedUnchecked="nodeCheckedUnchecked" />
+    <hummingbird-treeview-render :tree="fulltree" :fulltree="fulltree" :treeClickMode="treeClickMode" :checkParents="checkParents" :localstoragekey="localstoragekey" @nodeCheckedUnchecked="nodeCheckedUnchecked" :info="info"/>
 </template>
 
 <style>
@@ -67,10 +67,13 @@
      },
      mounted: function() {
 
-
+	 //this.tree[23].name = "--activ"
+	 //console.log("Hummingbird")
+	 //console.log(this.tree)
+	 //console.log(this.checkParents)
 	 
 	 //if tree exist in localstorage just return it
-	 //console.log(this.localstoragekey)	 
+	 //console.log("Hummingbird localstoragekey: "+this.localstoragekey)	 
 	 //for testing false for production true
 	 if (true){ 
 	     if (this.localstoragekey != undefined && this.localstoragekey != ""){
@@ -84,7 +87,7 @@
 	     }
 	 }
 
-	 
+	 //console.log("create")
 
 
 	 
@@ -92,7 +95,8 @@
 	 this.create_full_tree();
 	 //identify endnodes
 	 this.find_endnodes(this.fulltree,this.num_endnodes,this.info);
-	 
+
+	 //console.log(this.fulltree)
 
      },
      methods: {
@@ -182,21 +186,24 @@
 		     this.fulltree[name[0]].checked = checked;
 		     this.fulltree[name[0]].checkbox = checkbox;
 		     this.fulltree[name[0]].visible = true;
-		     this.fulltree[name[0]].tooltip = "";
-		     this.fulltree[name[0]].filepath = "";		    
+		     this.fulltree[name[0]].tooltip = tooltip;
+		     this.fulltree[name[0]].filepath = filepath;		    
 		     //initialize parents (again for every base node)
 		     parents = [];
 		 }
+		 //
 		 //
 		 //-----create / modify parents array, i.e. we have
 		 //-----to know the parents of each node
 		 if (parents.length == level){
 		     parents.pop();
 		 }
-		 //
+		 //number of pops must be difference+1 to allow larger jumps from deep to shallow
 		 if (parents.length > level){
-		     parents.pop();
-		     parents.pop();
+		     var parents_level_diff = parents.length - level;
+		     for (let i = 0; i <= parents_level_diff; i++) {
+			 parents.pop();
+		     }
 		 }
 		 //
 		 if (parents.length < level){
@@ -205,7 +212,6 @@
 		 }
 		 //-------------------------------------------------
                  //
-		 //new test without eval
 		 if (level>1){
 		     if (new_parents.length < level){
 			 let xk = (Number(k)-1).toString();
@@ -215,7 +221,6 @@
 			 //console.log("L="+L_parents_next)
 
 			 let xnode_template = JSON.parse(JSON.stringify(node_template));
-
 			 //set level 1 after base
 			 if (L_parents_next == 0){
 				 this.fulltree[parents[0]].children[parents.slice(-1,)] = Object.assign({}, xnode_template);
@@ -371,6 +376,7 @@
 
 	     //put tree into localStorage
 	     if (this.localstoragekey != undefined && this.localstoragekey != ""){
+		 //console.log("set full cruise tree in localStorage")
 		 localStorage.setItem(this.localstoragekey,JSON.stringify(this.fulltree));
                  localStorage.setItem(this.localstoragekey+"_info",JSON.stringify(this.info));
 	     }
