@@ -1,5 +1,5 @@
 <template>
-    <div v-if="true" v-cloak class="pl-4">
+    <div v-if="true" v-cloak class="pl-4">	
 	<ul class="">	    
 	    <li v-show="i.visible" v-for="i of tree" :data-name="i.name" :data-filepath="i.filepath" class="whitespace-nowrap">
 		<!-- add chevron if parent -->
@@ -24,7 +24,7 @@
 
 		<span v-if="i.endnode == false" class="font-bold  whitespace-nowrap cursor-pointer hover:text-white hover:bg-black" @click.self="toggleNode">{{i.name}}</span>
 
-		<HummingbirdTreeviewRender :tree="i.children" :fulltree="fulltree" :treeClickMode="treeClickMode" :checkParents="checkParents" v-if="i.children" @uncheckAll="uncheckAll(this.fulltree)" :localstoragekey="localstoragekey" @nodeCheckedUnchecked="nodeCheckedUnchecked" />
+		<HummingbirdTreeviewRender :tree="i.children" :fulltree="fulltree" :treeClickMode="treeClickMode" :checkParents="checkParents" v-if="i.children" @uncheckAll="uncheckAll(this.fulltree)" :localstoragekey="localstoragekey" @nodeCheckedUnchecked="nodeCheckedUnchecked" :wildcardsearch="wildcardsearch"/>
 
 	    </li>
 	</ul>
@@ -56,6 +56,7 @@
 	 treeClickMode: String,
 	 checkParents: Boolean,
 	 localstoragekey: String,
+	 wildcardsearch: Boolean,
      },
      emits: [
 	 'nodeCheckedUnchecked',

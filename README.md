@@ -181,7 +181,7 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 		    HummingbirdTreeview.vue 
 		</div>
 		<div class="">
-		    <hummingbird-treeview :tree="tree" :treeClickMode="treeClickMode" :checkParents="checkParents" ref="hummingbirdtreeviewref"  :localstoragekey="localstoragekey" @nodeCheckedUnchecked="nodeCheckedUnchecked">
+		    <hummingbird-treeview :tree="tree" :treeClickMode="treeClickMode" :checkParents="checkParents" ref="hummingbirdtreeviewref"  :localstoragekey="localstoragekey" :localstoragekeyinfo="localstoragekeyinfo" @nodeCheckedUnchecked="nodeCheckedUnchecked">
 		    </hummingbird-treeview>
 		</div>
 		<div class="pt-10 text-blue-500 font-bold">
@@ -217,7 +217,8 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 	     tree: [],
 	     treeClickMode: "multi", //single, multi
 	     checkParents: true, //true, false
-	     localstoragekey: "humtree_20",
+	     localstoragekey: "humtree_1",
+         localstoragekeyinfo: "humtree_info_1",
 	     tree_num_all: 0,
 	     tree_num_checked: 0,
 	     flatEndnodes: {},
@@ -290,8 +291,8 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
      },
      methods: {
 	    nodeCheckedUnchecked(){
-             if (localStorage.getItem(this.localstoragekey+"_info") != null && localStorage.getItem(this.localstoragekey+"_info") != "" ){
-                 let info = JSON.parse(localStorage.getItem(this.localstoragekey+"_info"));
+             if (localStorage.getItem(this.localstoragekeyinfo) != null && localStorage.getItem(this.localstoragekeyinfo) != "" ){
+                 let info = JSON.parse(localStorage.getItem(this.localstoragekeyinfo);
                  //console.log(info)
                  this.tree_num_checked = info.numchecked;
                  this.tree_num_all = info.num_endnodes;
@@ -336,17 +337,17 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 - *Info*__
   Additionally some state information is saved in the localStorage and can be retrieved. 
   ```javascript
-	  let info = JSON.parse(localStorage.getItem(this.localstoragekey+"_info"));
+	  let info = JSON.parse(localStorage.getItem(this.localstoragekeyinfo);
   ```
   The *info* object provides four attributes:__
   - *info.numchecked*: The number of checked endnodes.
   - *info.num_endnodes*: The total number of endnodes.
   - *info.num_allnodes*: The number of all nodes.
-  - *info.flatEndnodes*: An object, with the endnode names as keys and name, checked as values, e.g.
+  - *info.flatEndnodes*: An object, with the endnode filepath as keys and name, filepath, checked as values, e.g.
 	```javascript
 		"flatEndnodes": {
-		   "Lorrain Bracco": {"name":"Lorrain Bracco","checked",false},
-   		   "Ray Liotta": {"name":"Ray Liotta","checked",true},
+		   "/Warner Bros./Goodfellas/Robert De Niro/Lorrain Bracco": {"name":"Lorrain Bracco","filepath":"/Warner Bros./Goodfellas/Robert De Niro/Lorrain Bracco", "checked":false},
+   		   "/Warner Bros./Goodfellas/Robert De Niro/Ray Liotta": {"name":"Ray Liotta","filepath":"/Warner Bros./Goodfellas/Robert De Niro/Ray Liotta","checked":true},
 		   ...
 		   }
 	```

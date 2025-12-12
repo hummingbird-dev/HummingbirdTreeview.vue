@@ -1,5 +1,34 @@
 <template>
-    <hummingbird-treeview-render :tree="fulltree" :fulltree="fulltree" :treeClickMode="treeClickMode" :checkParents="checkParents" :localstoragekey="localstoragekey" @nodeCheckedUnchecked="nodeCheckedUnchecked" :info="info"/>
+    <div v-if="wildcardsearch" class="pt-8 pb-8">
+	<div class="max-w-sm">
+	    <label class="flex items-center text-sm font-medium text-gray-700 mb-1 gap-1 cursor-pointer" @click="wildcardsearch_help_func">
+		Wildcard Search <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 inline cursor-pointer " >
+		<path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+		</svg>
+	    </label>
+
+	    <div class="flex">
+		<input
+		    type="text"
+		    v-model="wildcardsearch_value"
+		    placeholder="Enter value"
+		    class="flex-1 rounded-l-md border border-gray-300 px-3 py-2
+			   text-sm text-gray-900
+			   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
+			   placeholder:text-gray-400"
+		/>
+		<button class="bg-gray-700 items-center place-items-center px-4 py-2  disabled:bg-gray-200 border border-transparent rounded-r-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-900 focus:bg-gray-900 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 disabled:cursor-not-allowed" @click.self="wildcardsearch_func">
+		    Check
+		</button>
+		
+  </div>
+</div>
+
+
+
+    </div>
+    
+    <hummingbird-treeview-render :tree="fulltree" :fulltree="fulltree" :treeClickMode="treeClickMode" :checkParents="checkParents" :localstoragekey="localstoragekey" @nodeCheckedUnchecked="nodeCheckedUnchecked" />
 </template>
 
 <style>
@@ -54,14 +83,18 @@
      data() {
 	 return {
 	     fulltree: {},
-	     info: {'numchecked':0, 'num_allnodes':0, 'num_endnodes':0,'flatEndnodes':{}},	     
+	     info: {'numchecked':0, 'num_allnodes':0, 'num_endnodes':0,'flatEndnodes':{}},
+	     wildcardsearch_value: "",
+	     wildcardsearch_help: false,
 	 }
      },
      props: {
 	 tree: Array,
 	 checkParents: Boolean, //true, false
 	 treeClickMode: String, //single, multi
-	 localstoragekey: String,	 
+	 localstoragekey: String,
+	 localstoragekeyinfo: String,
+	 wildcardsearch: Boolean,
      },
      created(){
      },
@@ -82,10 +115,9 @@
 		     this.fulltree = JSON.parse(localStorage.getItem(this.localstoragekey));
 		     return;
 		 }
-		 //set info object only on init if localstoragekey does not exist
-		 localStorage.setItem(this.localstoragekey+"_info",JSON.stringify(this.info));
 	     }
 	 }
+
 
 	 //console.log("create")
 
@@ -264,20 +296,20 @@
 	 find_endnodes(node,num_endnodes,info){
 	     for (var k in node) {
 		 if (typeof node[k] === 'object' && node[k] !== null) {
-		     if (node[k].name != undefined){
+		     if (node[k].filepath != undefined){
 			 //console.log(node[k])
 			 info.num_allnodes++;
 			 if (Object.keys(node[k].children).length === 0){
-			     //console.log(node[k].name)
+			     //console.log(node[k].filepath)
 			     node[k].endnode = true;
 			     info.num_endnodes++;
-			     info.flatEndnodes[node[k].name] = {"name":node[k].name, "checked":false};
+			     info.flatEndnodes[node[k].filepath] = {"name":node[k].name, "filepath":node[k].filepath, "checked":false};
 			     if (node[k].checked){				 
-				 //console.log("checked="+node[k].name)
+				 //console.log("checked="+node[k].filepath)
 				 info.numchecked++;
-				 info.flatEndnodes[node[k].name].checked = true;
+				 info.flatEndnodes[node[k].filepath].checked = true;
 			     }
-			     //console.log("endnode="+node[k].name)
+			     //console.log("endnode="+node[k].filepath)
 			     //console.log(num_endnodes)
 			 }			 
 		     }
@@ -378,12 +410,22 @@
 	     if (this.localstoragekey != undefined && this.localstoragekey != ""){
 		 //console.log("set full cruise tree in localStorage")
 		 localStorage.setItem(this.localstoragekey,JSON.stringify(this.fulltree));
-                 localStorage.setItem(this.localstoragekey+"_info",JSON.stringify(this.info));
+	     }
+
+	     if (this.localstoragekeyinfo != undefined && this.localstoragekeyinfo != ""){
+		 localStorage.setItem(this.localstoragekeyinfo,JSON.stringify(this.info));
 	     }
 
 	     this.$emit('nodeCheckedUnchecked');
 
 	 },
+	 wildcardsearch_func(){
+	     console.log("wildcardsearch_func")
+	     console.log(this.wildcardsearch_value)
+	 },
+	 wildcardsearch_help_func(){
+	     console.log("wildcardsearch_help_func")
+	 }
      },
  }
  </script>

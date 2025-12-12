@@ -1,5 +1,11 @@
 # CHANGES
 
+## 2025/12/11
+
+- :localstoragekeyinfo="localstoragekeyinfo" prop is now independent from localstoragekey
+- info Object "flatEndnodes" has now filepath as keys
+
+
 ## 2025/10/10
 
 - Large changes from deep nodes to shallow nodes were not working. Fixed.

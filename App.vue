@@ -8,7 +8,7 @@
 		    HummingbirdTreeview.vue 
 		</div>
 		<div class="">
-		    <hummingbird-treeview :tree="tree" :treeClickMode="treeClickMode" :checkParents="checkParents" ref="hummingbirdtreeviewref"  :localstoragekey="localstoragekey" @nodeCheckedUnchecked="nodeCheckedUnchecked">
+		    <hummingbird-treeview :tree="tree" :treeClickMode="treeClickMode" :checkParents="checkParents" ref="hummingbirdtreeviewref"  :localstoragekey="localstoragekey" @nodeCheckedUnchecked="nodeCheckedUnchecked" :localstoragekeyinfo="localstoragekeyinfo">
 		    </hummingbird-treeview>
 		</div>
 		<div class="pt-10 text-blue-500 font-bold">
@@ -44,7 +44,8 @@
 	     tree: [],
 	     treeClickMode: "multi", //single, multi
 	     checkParents: true, //true, false
-	     localstoragekey: "humtree_20",
+	     localstoragekey: "humtree_1",
+	     localstoragekeyinfo: "humtree_info_1",
 	     tree_num_all: 0,
 	     tree_num_checked: 0,
 	     flatEndnodes: {},
@@ -117,8 +118,8 @@
      },
      methods: {
 	 nodeCheckedUnchecked(){
-             if (localStorage.getItem(this.localstoragekey+"_info") != null && localStorage.getItem(this.localstoragekey+"_info") != "" ){
-                 let info = JSON.parse(localStorage.getItem(this.localstoragekey+"_info"));
+             if (localStorage.getItem(this.localstoragekeyinfo) != null && localStorage.getItem(this.localstoragekeyinfo) != "" ){
+                 let info = JSON.parse(localStorage.getItem(this.localstoragekeyinfo));
                  //console.log(info)
                  this.tree_num_checked = info.numchecked;
                  this.tree_num_all = info.num_endnodes;
