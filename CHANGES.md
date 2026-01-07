@@ -1,5 +1,11 @@
 # CHANGES
 
+## 2026/01/07
+
+- New Event "@ready", when tree is rendered.
+- Fix: tree was not stored in localstorage on initialization
+
+
 ## 2025/12/11
 
 - :localstoragekeyinfo="localstoragekeyinfo" prop is now independent from localstoragekey

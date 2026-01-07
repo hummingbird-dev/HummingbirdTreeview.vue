@@ -181,7 +181,7 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 		    HummingbirdTreeview.vue 
 		</div>
 		<div class="">
-		    <hummingbird-treeview :tree="tree" :treeClickMode="treeClickMode" :checkParents="checkParents" ref="hummingbirdtreeviewref"  :localstoragekey="localstoragekey" :localstoragekeyinfo="localstoragekeyinfo" @nodeCheckedUnchecked="nodeCheckedUnchecked">
+		    <hummingbird-treeview :tree="tree" :treeClickMode="treeClickMode" :checkParents="checkParents" ref="hummingbirdtreeviewref"  :localstoragekey="localstoragekey" :localstoragekeyinfo="localstoragekeyinfo" @nodeCheckedUnchecked="nodeCheckedUnchecked" @ready="tree_ready">
 		    </hummingbird-treeview>
 		</div>
 		<div class="pt-10 text-blue-500 font-bold">
@@ -299,6 +299,9 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 		         this.flatEndnodes = info.flatEndnodes;
              }
 	    },
+		tree_ready(){
+			console.log("tree is rendered");
+		}
      }
  }
 </script>
@@ -355,10 +358,12 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 
 ## Events (Emits)
 
-- *@nodeCheckedUnchecked*__
-  Triggered after every check or uncheck action. Here, the localStorage info object can be retrieved e.g. to update
-  tree info.
-
+- *@nodeCheckedUnchecked*  
+  Triggered after every check or uncheck
+  action. Here, the localStorage info object can be retrieved e.g. to
+  update tree info.
+- *@ready*  
+  Emitted when tree is rendered (fully mounted).
 
 ## Methods
 

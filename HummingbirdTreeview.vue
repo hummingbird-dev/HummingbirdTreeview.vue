@@ -79,6 +79,7 @@
      emits: [
 	 'getCheckedNodesEmit',
 	 'nodeCheckedUnchecked',
+	 'ready',
      ],
      data() {
 	 return {
@@ -97,9 +98,13 @@
 	 wildcardsearch: Boolean,
      },
      created(){
-     },
+     },     
      mounted: function() {
 
+
+	 //console.log("localstoragekey")
+	 //console.log(this.localstoragekey)
+	 
 	 //this.tree[23].name = "--activ"
 	 //console.log("Hummingbird")
 	 //console.log(this.tree)
@@ -113,6 +118,7 @@
 		 if (localStorage.getItem(this.localstoragekey) != "" && localStorage.getItem(this.localstoragekey) != null){
 		     //console.log("Hummingbirdtreeview : "+this.localstoragekey+" exists!")
 		     this.fulltree = JSON.parse(localStorage.getItem(this.localstoragekey));
+		     this.$emit('ready');
 		     return;
 		 }
 	     }
@@ -130,6 +136,13 @@
 
 	 //console.log(this.fulltree)
 
+	 //put into localstorage
+	 if (this.localstoragekey != undefined && this.localstoragekey != ""){
+	     localStorage.setItem(this.localstoragekey,JSON.stringify(this.fulltree));
+	 }
+	 
+	 this.$emit('ready');
+	 
      },
      methods: {
 	 create_full_tree(){

@@ -57,6 +57,7 @@
 	 checkParents: Boolean,
 	 localstoragekey: String,
 	 wildcardsearch: Boolean,
+	 
      },
      emits: [
 	 'nodeCheckedUnchecked',
