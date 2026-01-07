@@ -8,7 +8,7 @@
 		    HummingbirdTreeview.vue 
 		</div>
 		<div class="">
-		    <hummingbird-treeview :tree="tree" :treeClickMode="treeClickMode" :checkParents="checkParents" ref="hummingbirdtreeviewref"  :localstoragekey="localstoragekey" @nodeCheckedUnchecked="nodeCheckedUnchecked" :localstoragekeyinfo="localstoragekeyinfo">
+		    <hummingbird-treeview :tree="tree" :treeClickMode="treeClickMode" :checkParents="checkParents" ref="hummingbirdtreeviewref"  :localstoragekey="localstoragekey" @nodeCheckedUnchecked="nodeCheckedUnchecked" :localstoragekeyinfo="localstoragekeyinfo" @ready="tree_ready">
 		    </hummingbird-treeview>
 		</div>
 		<div class="pt-10 text-blue-500 font-bold">
@@ -125,6 +125,9 @@
                  this.tree_num_all = info.num_endnodes;
 		 this.flatEndnodes = info.flatEndnodes;
              }
+	 },
+	 tree_ready(){
+	     console.log("tree is rendered");
 	 },
      }
  }
