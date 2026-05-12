@@ -253,7 +253,7 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 <script>
 
  import { ref } from 'vue';
- import HummingbirdTreeview from './components/HummingbirdTreeview.vue'
+ import HummingbirdTreeview from '../node_modules/HummingbirdTreeview.vue'
 
  const hummingbirdtreeviewref = ref(null);
  
