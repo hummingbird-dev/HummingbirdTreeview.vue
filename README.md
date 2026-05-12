@@ -38,6 +38,52 @@ $ npm install hummingbirdtreeview.vue
 
 ![alt text](./treeview_vue_img.png "HummingbirdTreeview.vue example")
 
+
+## Project Setup
+
+As a simple example to setup *HummingbirdTreeview* follow the
+instructions at https://vuejs.org/guide/quick-start.html.
+
+Then install *HummingbirdTreeview* via npm.
+
+Next replace the *App.vue*:
+
+``` shell
+cp node_modules/hummingbirdtreeview.vue/App.vue src/App.vue
+
+```
+
+Copy the style file:
+
+``` shell
+cp node_modules/hummingbirdtreeview.vue/HummingbirdTreeview.css src/HummingbirdTreeview.css
+
+```
+
+Include the style file in *index.html*
+
+``` html
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" crossorigin href="/src/HummingbirdTreeview.css">
+
+    <title>Vite App</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+
+```
+
+Finally run your project: *npm run dev* or *npm run build*.
+
+
 ## Input data
 
 HummingbirdTreeview.vue makes it super easy to create deep hierarchical
@@ -364,47 +410,4 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 ## Methods
 
 
-## Project Setup
-
-As a simple example to setup *HummingbirdTreeview* follow the
-instructions at https://vuejs.org/guide/quick-start.html.
-
-Then install *HummingbirdTreeview* via npm.
-
-Next replace the *App.vue*:
-
-``` shell
-cp node_modules/hummingbirdtreeview.vue/App.vue src/App.vue
-
-```
-
-Copy the style file:
-
-``` shell
-cp node_modules/hummingbirdtreeview.vue/HummingbirdTreeview.css src/HummingbirdTreeview.css
-
-```
-
-Include the style file in *index.html*
-
-``` html
-<!DOCTYPE html>
-<html lang="">
-  <head>
-    <meta charset="UTF-8">
-    <link rel="icon" href="/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" crossorigin href="/src/HummingbirdTreeview.css">
-
-    <title>Vite App</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
-</html>
-
-```
-
-Finally run your project: *npm run dev* or *npm run build*.
 
