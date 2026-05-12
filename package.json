@@ -1,6 +1,6 @@
 {
   "name": "hummingbirdtreeview.vue",
-  "version": "1.9.3",
+  "version": "1.9.4",
   "description": "A powerful and fast Vue.js treeview component.",
   "main": "HummingbirdTreeview.vue",
   "scripts": {
