@@ -328,7 +328,7 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 	  this.localstoragekey = undefined;
   ```
 
-- *Info*__
+- *Info*  
   Additionally some state information is saved in the IndexedDB and can be retrieved. 
   The *info* object provides four attributes:__
   - *info.numchecked*: The number of checked endnodes.
@@ -344,7 +344,7 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 	```
 	
 - *wildcardsearch*  
-  Adds an input field and some buttons to search for items. Wildcards are supported. 
+  "true" or "false". Adds an input field and some buttons to search for items. Wildcards are supported. 
   Use exact terms or * as a wildcard. Examples: *polar (ends with), 8975* (starts with), 
   *atlantic* (contains). Use || as "or" operation, e.g. 19* || 29*. 
   Searches are case-insensitive. Click on SELECT or hit Enter.
