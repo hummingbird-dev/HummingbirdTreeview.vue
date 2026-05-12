@@ -1,5 +1,11 @@
 # CHANGES
 
+## 2026/05/12
+
+- Switch to IndexedDB for large localStorage cache
+- Add wildcardsearch function.
+
+
 ## 2026/01/19
 
 - Tooltip update, now with HummingBirdTooltip.vue comnponent
