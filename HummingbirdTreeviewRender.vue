@@ -14,13 +14,17 @@
 		<!-- checkbox not endnode checked -->
 		<input v-if="i.checkbox == true && i.endnode == false && i.checked == true" checked id="" type="checkbox" :indeterminate.prop="i.indeterminate" value="" :class="cursor_style" class="w-4 h-4 align-middle mr-1 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 cursor-pointer" @click.self="checkParent(i,$event)">
 		
-		<div class="tooltip">
-		    <span v-if="i.endnode == true && i.checkbox == true" class="ml-1 whitespace-nowrap cursor-pointer hover:text-white hover:bg-black" @click.self="selectNode(i,$event)">{{i.name}} 
+		<!-- <webodv-tooltip v-if="i.tooltip != '' && i.tooltip != undefined" class="w-full" text="{{i.tooltip}}" placement="top"> -->
+		<hummingbird-tooltip v-if="i.tooltip" class="" :text="i.tooltip" placement="right"> 
+		    <span v-if="i.endnode == true && i.checkbox == true" class="ml-1 whitespace-nowrap cursor-pointer hover:text-white hover:bg-black" @click.self="selectNode(i)">{{i.name}} 
 		    </span>		
 		    <a v-if="i.endnode == true && i.checkbox != true" class="ml-1 whitespace-nowrap cursor-pointer hover:text-white hover:bg-black" :href="i.filepath">{{i.name}}</a>
-		    
-		    <span v-if="i.tooltip != '' && i.tooltip != undefined" class="tooltiptext" style="text-align:center; padding:4px; margin:4px;">{{i.tooltip}}</span>
-		</div>
+		</hummingbird-tooltip>
+		<span v-else>
+		    <span v-if="i.endnode == true && i.checkbox == true" class="ml-1 whitespace-nowrap cursor-pointer hover:text-white hover:bg-black" @click.self="selectNode(i)">{{i.name}} 
+		    </span>		
+		    <a v-if="i.endnode == true && i.checkbox != true" class="ml-1 whitespace-nowrap cursor-pointer hover:text-white hover:bg-black" :href="i.filepath">{{i.name}}</a>
+		</span>
 
 		<span v-if="i.endnode == false" class="font-bold  whitespace-nowrap cursor-pointer hover:text-white hover:bg-black" @click.self="toggleNode">{{i.name}}</span>
 
@@ -34,13 +38,14 @@
 <script>
  import { ChevronRightIcon } from '@heroicons/vue/24/solid'
  import { ChevronDownIcon } from '@heroicons/vue/24/solid'
-
+ import HummingBirdTooltip from "./HummingbirdTooltip.vue";
 
  export default {
      name: "HummingbirdTreeviewRender",
      components: {
 	 ChevronRightIcon,
-	 ChevronDownIcon
+	 ChevronDownIcon,
+	 'hummingbird-tooltip': HummingBirdTooltip,
      },
      data() {
 	 return {
@@ -57,11 +62,63 @@
 	 checkParents: Boolean,
 	 localstoragekey: String,
 	 wildcardsearch: Boolean,
-	 
+	 wildcardsearch_trigger: String,
+	 uncheck_all_trigger: Boolean,
+	 check_all_trigger: Boolean,
+	 collapse_all_trigger: Boolean,
+	 expand_all_trigger: Boolean,
      },
      emits: [
 	 'nodeCheckedUnchecked',
+	 'wildcardsearch_func_done',
+	 'uncheck_all_done',
+	 'check_all_done',
+	 'collapse_all_done',
+	 'expand_all_done',
      ],
+     watch: {
+	 wildcardsearch_trigger: function(val){
+	     //console.log("wildcardsearch_trigger="+val)
+	     if (val != "mbwxx60fsbqo4txu" && val.trim() != ''){
+		 this.wildcardsearch_trigger_func(val);
+	     }
+	     if (val.trim() == ''){
+		 this.$emit('wildcardsearch_func_done',-1);
+	     }
+	 },
+	 uncheck_all_trigger: function(newval,oldval){
+	     if (newval){
+		 //this.uncheckAll(this.fulltree);
+		 this.loopRecurs(this.fulltree,this,false);
+		 this.nodeCheckedUnchecked();
+		 this.$emit('uncheck_all_done');
+	     }
+	 },	 
+	 check_all_trigger: function(newval,oldval){
+	     if (newval){
+		 //this.uncheckAll(this.fulltree);
+		 this.loopRecurs(this.fulltree,this,true);
+		 this.nodeCheckedUnchecked();
+		 this.$emit('check_all_done');
+	     }
+	 },	 
+	 collapse_all_trigger: function(newval,oldval){
+	     if (newval){
+		 //console.log("collapse_all")
+		 //this.uncheckAll(this.fulltree);
+		 this.loopRecursCollapseExpand(this.fulltree,this,true);
+		 this.$emit('collapse_all_done');
+	     }
+	 },	 
+	 expand_all_trigger: function(newval,oldval){
+	     if (newval){
+		 //this.uncheckAll(this.fulltree);
+		 //console.log("expand all")
+		 this.loopRecursCollapseExpand(this.fulltree,this,false);
+		 this.$emit('expand_all_done');
+	     }
+	 },	 
+     },
      created(){
 	 //console.log("created")
 	 if (this.checkParents == false){
@@ -113,55 +170,31 @@
 		 this_node['children'][property].visible = !this_node['children'][property].visible;
 	     }
 	 },
-	 selectNode(node,e) {
-	     //
-	     /* console.log("selectNode")
-		console.log(node.name)
-		console.log(this)*/
-	     //console.log(node)
-	     //this is a click on a endnode
-	     //console.log("endnode")
-	     //
-	     //
-	     //console.log("treeClickMode")
-	     //console.log(this.treeClickMode)
+	 selectNode(node) {
+	     //if single mode -> uncheck all others
+	     //except it is a click on the same node to uncheck
+	     //localStorage last_node is deleted always in HummingbirdTreeview.vue
 	     if (this.treeClickMode == "single"){
-		 //this.uncheckAllOther()
 		 let last_node = JSON.parse(localStorage.getItem("last_node_"+this.localstoragekey));
-		 //console.log(last_node)
 		 if (last_node != undefined){
-		     //console.log("old_last_node="+last_node)
-		     //this.fulltree["Dirty_Dataset"].children["Dirty_Dataset.Data"].children["data"].checked = false;
-		     //check if last node exists in this fulltree
-		     if (this.fulltree[last_node[0]] != undefined){
-			 if (last_node.length == 1){
-			     this.fulltree[last_node[0]].checked = false;
-			 } else {
-			     //build node
-			     let parent_obj = this.fulltree[last_node[0]];
-			     parent_obj.checked = false;
-			     parent_obj.indeterminate = false;
-			     //console.log(parent_obj)
-			     //build children node
-			     for (let j=1; j<last_node.length; j++){
-				 //console.log(j)
-				 parent_obj = parent_obj.children[last_node[j]];
+		     //only if it is not a click on the same node
+		     if (last_node[0] != node.name){
+			 if (this.fulltree[last_node[0]] != undefined){
+			     if (last_node.length == 1){
+				 this.fulltree[last_node[0]].checked = false;
+			     } else {
+				 let parent_obj = this.fulltree[last_node[0]];
 				 parent_obj.checked = false;
 				 parent_obj.indeterminate = false;
+				 for (let j=1; j<last_node.length; j++){
+				     parent_obj = parent_obj.children[last_node[j]];
+				     parent_obj.checked = false;
+				     parent_obj.indeterminate = false;
+				 }
 			     }
-			     //console.log(parent_obj)
 			 }
 		     }
-		     //console.log(last_node)
-		     //last_node.checked = true;
 		 }
-		 //console.log("old_last_node="+this.last_node.name)
-		 //this.last_node.checked = false;
-		 //emit
-		 //this.$emit('uncheckAll');
-		 //this.uncheckAll(this.fulltree);
-		 //this.fulltree = JSON.parse(localStorage.getItem("emptytree"));
-		 
 	     }
 	     //
 	     
@@ -217,9 +250,11 @@
 	 checkbox_endnode_clicked(i,event){
 	     //prevent the click on a checkbox and do it via the selectNode
 	     //because othwerwise we have no programmatical access
+	     //console.log("checkbox_endnode_clicked")
+	     //console.log(i)
 	     //console.log(event)
 	     event.preventDefault();
-	     this.selectNode(i,event);
+	     this.selectNode(i);
 	 },
 	 checkbox_parent_clicked(i,event){
 	     //prevent the click on a checkbox and do it via the selectNode
@@ -278,6 +313,20 @@
 			 node[k].indeterminate = false;
 		     }
 		     that.loopRecurs(node[k],that,that_node_checked);
+		 }
+	     }
+	 },
+	 loopRecursCollapseExpand(node,that,collapse_expand){
+	     for (var k in node) {
+		 if (typeof node[k] === 'object' && node[k] !== null) {
+		     //console.log(node[k].name)
+		     if (node[k].collapsed != undefined){
+			 node[k].collapsed = collapse_expand;
+			 if (node[k].level>1){
+			     node[k].visible = !collapse_expand;
+			 }
+		     }
+		     that.loopRecursCollapseExpand(node[k],that,collapse_expand);
 		 }
 	     }
 	 },
@@ -374,10 +423,115 @@
 	 },
 	 nodeCheckedUnchecked(){
 	     //console.log("nodeCheckedUnchecked in Render")
-	     if (this.localstoragekey != undefined){
-		 localStorage.setItem(this.localstoragekey,JSON.stringify(this.fulltree));
-	     }
+	     //if (this.localstoragekey != undefined){
+		 //localStorage.setItem(this.localstoragekey,JSON.stringify(this.fulltree));
+	     //}
 	     this.$emit('nodeCheckedUnchecked');
+	 },
+	 wildcardsearch_trigger_func(val){
+	     //console.log("wildcardsearch_trigger_func="+val)
+	     //
+	     //search in tree and get nodes
+	     //check all those and then check the tree with
+	     //loopRecursParent from the last checked node
+	     //console.log(this.fulltree)
+	     var that = this;
+	     let xcounter = {"num":0};
+	     let last_node = {"node":{}};
+	     //
+	     //uncheck all, better do that in loopRecurs_wildcard
+	     //this.uncheckAll(this.fulltree);
+	     //
+	     //const start = performance.now();
+		 xcounter = this.loopRecurs_wildcard(this.fulltree,that,val,xcounter,last_node);
+		 //console.log("xcounter="+xcounter.num);
+		 //console.log("last_node="+last_node.node.name)
+		 //and finally at the end
+	     if (last_node.node.set != undefined){
+		 //console.log("final check")
+		 //console.log(last_node.node.name)
+		 this.loopRecursParent(last_node.node);
+	     }
+	     //const end = performance.now();
+	     //console.log(`Duration: ${(end - start)/1000} s`);
+	     
+	     this.nodeCheckedUnchecked();
+	     this.$emit('wildcardsearch_func_done',xcounter.num);
+	     
+	     
+	 },
+	 loopRecurs_wildcard(node,that,searchval,xcounter,last_node){
+	     for (var k in node) {
+		 if (typeof node[k] === 'object' && node[k] !== null) {
+		     /* if (node[k].name){
+			console.log("current node")
+			console.log(node[k].name)
+			console.log(node[k].level)
+			}
+		      */
+		     /* console.log("current node")
+			console.log(node[k].name)
+			console.log("last node")
+			console.log(last_node.node.name)
+		      */
+		     //check tree backward if current node.level is larger than last_node.node.level
+		     //meaning if we are deep in the tree and
+		     //then going up again we need to check full backward
+		     if (last_node.node.set != undefined && node[k].name){
+			 //console.log("call loopRecursParent on")
+			 if (node[k].level < last_node.node.level){
+			     //console.log("current node")
+			     //console.log(node[k].name)
+			     //console.log("last node")
+			     //console.log(last_node.node.name)
+			     //console.log(last_node.node.level)
+			     that.loopRecursParent(last_node.node);
+			     //reininitalize
+			     last_node.node.set = undefined;
+			 }
+		     }
+		     
+			 
+
+		     if (node[k].endnode){
+			 //replace || by |
+			 //and add ()			 
+			 if (!searchval.includes('*')){
+			     var searchval_new = '(' + searchval.replace(/ \|\| /g, "|") + ')';
+			     //check exact match if no * is in searchval
+			     var regexStr = new RegExp(`\\b${searchval_new}\\b`); //.test(text)
+			     //console.log(regexStr)
+			 } else {
+			     //check with wildcards, thus replace * by .* for regex
+			     //and anchor start / end
+			     var searchval_new = searchval.replace(/ \|\| /g, "$|^");
+			     var searchval_r = '(^' + searchval_new.replace(/\*/g, '.*') + '$)';
+			     //console.log(searchval_r)
+			     var regexStr = new RegExp(searchval_r,'i');
+			 }
+			 //console.log(regexStr)
+			 let searchresults = regexStr.test(node[k].name);
+			 //console.log("hallo")
+			 //let searchresults = true;
+			 if (searchresults){
+			     //console.log("check node:")
+			     //console.log(node[k].name)
+			     //console.log(node[k])
+			     node[k].checked = true;
+			     last_node.node = node[k];
+			     last_node.node.set = true;
+			     xcounter.num++;
+			 }
+			 //console.log(xcounter)
+			 //console.log(node[k])
+			 //node[k].checked = that_node_checked;
+			 //node[k].indeterminate = false;
+		     }
+		     //console.log(xcounter)
+		     that.loopRecurs_wildcard(node[k],that,searchval,xcounter,last_node);
+		 }
+	     }
+	     return xcounter;
 	 },
      }
  };

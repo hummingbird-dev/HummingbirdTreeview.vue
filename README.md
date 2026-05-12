@@ -36,7 +36,7 @@ $ npm install hummingbirdtreeview.vue
 
 ## Example 
 
-![alt text](./treeview_vue_anim.gif "HummingbirdTreeview.vue example animation")
+![alt text](./treeview_vue_img.png "HummingbirdTreeview.vue example")
 
 ## Input data
 
@@ -181,15 +181,15 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 		    HummingbirdTreeview.vue 
 		</div>
 		<div class="">
-		    <hummingbird-treeview :tree="tree" :treeClickMode="treeClickMode" :checkParents="checkParents" ref="hummingbirdtreeviewref"  :localstoragekey="localstoragekey" :localstoragekeyinfo="localstoragekeyinfo" @nodeCheckedUnchecked="nodeCheckedUnchecked" @ready="tree_ready">
+		    <hummingbird-treeview :tree="tree" :treeClickMode="treeClickMode" :checkParents="checkParents" ref="hummingbirdtreeviewref"  :localstoragekey="localstoragekey" @nodeCheckedUnchecked="nodeCheckedUnchecked" :localstoragekeyinfo="localstoragekeyinfo" @ready="tree_ready" :wildcardsearch="true">
 		    </hummingbird-treeview>
 		</div>
 		<div class="pt-10 text-blue-500 font-bold">
 		    Checked Items:
                     {{ this.tree_num_checked }} of {{ this.tree_num_all }}
 		</div>
-		<div class="pt-4">
-		    <ul class="list-disc">
+		<div class="pt-4 pb-20">
+		    <ul class="list-disc pl-6">
 			<div v-for="i of flatEndnodes">
 			    <li v-if="i.checked">
 				{{ i.name }}
@@ -206,7 +206,10 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 
 <script>
 
+ import { ref } from 'vue';
  import HummingbirdTreeview from './components/HummingbirdTreeview.vue'
+
+ const hummingbirdtreeviewref = ref(null);
  
  export default {
      components: {
@@ -217,8 +220,8 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 	     tree: [],
 	     treeClickMode: "multi", //single, multi
 	     checkParents: true, //true, false
-	     localstoragekey: "humtree_1",
-         localstoragekeyinfo: "humtree_info_1",
+	     localstoragekey: "humtree_6",
+	     localstoragekeyinfo: "humtree_info_6",
 	     tree_num_all: 0,
 	     tree_num_checked: 0,
 	     flatEndnodes: {},
@@ -283,28 +286,23 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
 		 "name": "--Robin Wright",
 	     },
 	 ];
-
-	 
-
      },
      mounted: function() {
      },
      methods: {
-	    nodeCheckedUnchecked(){
-             if (localStorage.getItem(this.localstoragekeyinfo) != null && localStorage.getItem(this.localstoragekeyinfo) != "" ){
-                 let info = JSON.parse(localStorage.getItem(this.localstoragekeyinfo);
-                 //console.log(info)
-                 this.tree_num_checked = info.numchecked;
-                 this.tree_num_all = info.num_endnodes;
-		         this.flatEndnodes = info.flatEndnodes;
-             }
-	    },
-		tree_ready(){
-			console.log("tree is rendered");
-		}
+	 async nodeCheckedUnchecked(){
+	     let info = await this.$refs.hummingbirdtreeviewref.getFromIDB(this.localstoragekeyinfo);
+             this.tree_num_checked = info.numchecked;
+             this.tree_num_all = info.num_endnodes;
+	     this.flatEndnodes = info.flatEndnodes;
+	 },
+	 tree_ready(){
+	     console.log("tree is rendered");
+	 },
      }
  }
 </script>
+
 ```
 
 ## Options (Props)
@@ -320,28 +318,18 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
   
 - *localstoragekey*  
   This is used to save the state of the treeview permanentely.
-  If provided, the full tree structure is saved in the localStorage
-  and also taken from the localStorage.  **Important**: Hence the
+  If provided, the full tree structure is saved in the IndexedDB
+  and also taken from the IndexedDB.  **Important**: Hence the
   treeview is taken from cache and not created freshly if you change the input data!
   If you change your input data and need to rebuild the tree see further below.  
     
-  The tree can be accessed globally via that key:
-  ```javascript
-	  this.fulltree = JSON.parse(localStorage.getItem(this.localstoragekey));
-  ```
   If you don't want to use that, just leave it out or set
   ```javascript
 	  this.localstoragekey = undefined;
   ```
-  or delete the localStorage to rebuild the tree.
-  ```javascript
-     localStorage.removeItem(this.localstoragekey);
-  ```
+
 - *Info*__
-  Additionally some state information is saved in the localStorage and can be retrieved. 
-  ```javascript
-	  let info = JSON.parse(localStorage.getItem(this.localstoragekeyinfo);
-  ```
+  Additionally some state information is saved in the IndexedDB and can be retrieved. 
   The *info* object provides four attributes:__
   - *info.numchecked*: The number of checked endnodes.
   - *info.num_endnodes*: The total number of endnodes.
@@ -349,11 +337,19 @@ Important: Integrate the *HummingbirdTreeview.css* into your project.
   - *info.flatEndnodes*: An object, with the endnode filepath as keys and name, filepath, checked as values, e.g.
 	```javascript
 		"flatEndnodes": {
-		   "/Warner Bros./Goodfellas/Robert De Niro/Lorrain Bracco": {"name":"Lorrain Bracco","filepath":"/Warner Bros./Goodfellas/Robert De Niro/Lorrain Bracco", "checked":false},
-   		   "/Warner Bros./Goodfellas/Robert De Niro/Ray Liotta": {"name":"Ray Liotta","filepath":"/Warner Bros./Goodfellas/Robert De Niro/Ray Liotta","checked":true},
+		   "/Warner Bros./Goodfellas/Robert De Niro/Lorrain Bracco": {"name":"Lorrain Bracco","filepath":"/Warner Bros./Goodfellas/Robert_De_Niro/Lorrain_Bracco", "checked":false},
+   		   "/Warner Bros./Goodfellas/Robert De Niro/Ray Liotta": {"name":"Ray Liotta","filepath":"/Warner Bros./Goodfellas/Robert_De_Niro/Ray_Liotta","checked":true},
 		   ...
 		   }
 	```
+	
+- *wildcardsearch*  
+  Adds an input field and some buttons to search for items. Wildcards are supported. 
+  Use exact terms or * as a wildcard. Examples: *polar (ends with), 8975* (starts with), 
+  *atlantic* (contains). Use || as "or" operation, e.g. 19* || 29*. 
+  Searches are case-insensitive. Click on SELECT or hit Enter.
+
+
   
 
 ## Events (Emits)

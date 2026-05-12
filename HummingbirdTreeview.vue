@@ -1,68 +1,36 @@
 <template>
-    <div v-if="wildcardsearch" class="pt-8 pb-8">
+    <div v-if="wildcardsearch" class="pt-2 pb-8 px-1">
 	<div class="max-w-sm">
-	    <label class="flex items-center text-sm font-medium text-gray-700 mb-1 gap-1 cursor-pointer" @click="wildcardsearch_help_func">
-		Wildcard Search <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 inline cursor-pointer " >
-		<path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
-		</svg>
-	    </label>
+	    <hummingbird-wildcard-search :wildcardsearch_is_processing="wildcardsearch_is_processing" :searchcounter="searchcounter" @wildcardsearch_func_emit="wildcardsearch_func" :localstoragekeyinfo="localstoragekeyinfo" @wildcardsearch_on_focus_emit="onFocus">
+	    </hummingbird-wildcard-search>
+	    <div class="grid grid-cols-2 gap-2 max-w-sm">
+		<button class="mt-2 w-full bg-gray-700 items-center place-items-center px-4 py-2  disabled:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-900 focus:bg-gray-900 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 disabled:cursor-not-allowed" @click.self="check_all">
+		    Select all
+		</button>			
+		<button class="mt-2 w-full bg-gray-700 items-center place-items-center px-4 py-2  disabled:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-900 focus:bg-gray-900 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 disabled:cursor-not-allowed" @click.self="expand_all">
+		    Expand
+		</button>			
+		<button class="mt-2 w-full bg-gray-700 items-center place-items-center px-4 py-2  disabled:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-900 focus:bg-gray-900 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 disabled:cursor-not-allowed" @click.self="uncheck_all">
+		    Deselect all
+		</button>			
+		<button class="mt-2 w-full bg-gray-700 items-center place-items-center px-4 py-2  disabled:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-900 focus:bg-gray-900 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 disabled:cursor-not-allowed" @click.self="collapse_all">
+		    Collapse
+		</button>			
 
-	    <div class="flex">
-		<input
-		    type="text"
-		    v-model="wildcardsearch_value"
-		    placeholder="Enter value"
-		    class="flex-1 rounded-l-md border border-gray-300 px-3 py-2
-			   text-sm text-gray-900
-			   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
-			   placeholder:text-gray-400"
-		/>
-		<button class="bg-gray-700 items-center place-items-center px-4 py-2  disabled:bg-gray-200 border border-transparent rounded-r-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-900 focus:bg-gray-900 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 disabled:cursor-not-allowed" @click.self="wildcardsearch_func">
-		    Check
-		</button>
-		
-  </div>
-</div>
+	    </div>
+	</div>
 
 
 
     </div>
-    
-    <hummingbird-treeview-render :tree="fulltree" :fulltree="fulltree" :treeClickMode="treeClickMode" :checkParents="checkParents" :localstoragekey="localstoragekey" @nodeCheckedUnchecked="nodeCheckedUnchecked" />
+
+    <div :class="[heightClass, scrollClass]">
+	<hummingbird-treeview-render :tree="fulltree" :fulltree="fulltree" :treeClickMode="treeClickMode" :checkParents="checkParents" :localstoragekey="localstoragekey" @nodeCheckedUnchecked="nodeCheckedUnchecked" :wildcardsearch_trigger="wildcardsearch_trigger" @wildcardsearch_func_done="wildcardsearch_func_done" :uncheck_all_trigger="uncheck_all_trigger" @uncheck_all_done="uncheck_all_done" :check_all_trigger="check_all_trigger" @check_all_done="check_all_done" :collapse_all_trigger="collapse_all_trigger" @collapse_all_done="collapse_all_done" :expand_all_trigger="expand_all_trigger" @expand_all_done="expand_all_done"/>
+    </div>
+
 </template>
 
 <style>
- /* Tooltip container */
- /* https://www.w3schools.com/css/css_tooltip.asp */
- .tooltip {
-     position: relative;
-     display: inline-block;
-     /* border-bottom: 1px dotted black; */ /* If you want dots under the hoverable text */
- }
-
- /* Tooltip text */
- .tooltip .tooltiptext {
-     visibility: hidden;
-     width: 200px;
-     background-color: #192434; /* bg-gray-800 */
-     color: #fff;
-     text-align: center;
-     padding: 5px 0;
-     border-radius: 6px;
-     white-space: normal;
-     word-wrap: break-word;
-     overflow-wrap: break-word;
-
-     
-     /* Position the tooltip text - see examples below! */
-     position: absolute;
-     z-index: 10;
- }
-
- /* Show the tooltip text when you mouse over the tooltip container */
- .tooltip:hover .tooltiptext {
-     visibility: visible;
- }
 </style>
 
 <script>
@@ -70,23 +38,36 @@
 
  
  import HummingbirdTreeviewRender from "./HummingbirdTreeviewRender.vue";
+ import { idbGet, idbSet } from "./HummingbirdIDB.js"
+ import HummingbirdWildcardSearch from "./HummingbirdWildcardSearch.vue"
  
  export default {
      name: "HummingbirdTreeview",
      components: {
 	 'hummingbird-treeview-render': HummingbirdTreeviewRender,
+	 'hummingbird-wildcard-search': HummingbirdWildcardSearch,
      },
      emits: [
 	 'getCheckedNodesEmit',
 	 'nodeCheckedUnchecked',
 	 'ready',
+	 'hum_wildcard_search_running'
      ],
      data() {
 	 return {
 	     fulltree: {},
+	     loadFromIDBfinished: false,
 	     info: {'numchecked':0, 'num_allnodes':0, 'num_endnodes':0,'flatEndnodes':{}},
 	     wildcardsearch_value: "",
-	     wildcardsearch_help: false,
+	     wildcardsearch_isvalid: true,
+	     //wildcardsearch_help: false,
+	     wildcardsearch_trigger: "",
+	     wildcardsearch_is_processing: false,
+	     searchcounter: -1,
+	     uncheck_all_trigger: false,
+	     check_all_trigger: false,
+	     collapse_all_trigger: false,
+	     expand_all_trigger: false,
 	 }
      },
      props: {
@@ -96,14 +77,21 @@
 	 localstoragekey: String,
 	 localstoragekeyinfo: String,
 	 wildcardsearch: Boolean,
+	 heightClass: String,
+	 scrollClass: String,
      },
      created(){
      },     
      mounted: function() {
-
+	 var that = this;
+	 //console.log("addEventListener")
+	 //document.addEventListener('keyup',this.onKeyUp)
 
 	 //console.log("localstoragekey")
 	 //console.log(this.localstoragekey)
+
+	 //remove last_node used for singleclick mode
+	 localStorage.removeItem("last_node_"+this.localstoragekey);
 	 
 	 //this.tree[23].name = "--activ"
 	 //console.log("Hummingbird")
@@ -113,42 +101,104 @@
 	 //if tree exist in localstorage just return it
 	 //console.log("Hummingbird localstoragekey: "+this.localstoragekey)	 
 	 //for testing false for production true
-	 if (true){ 
-	     if (this.localstoragekey != undefined && this.localstoragekey != ""){
-		 if (localStorage.getItem(this.localstoragekey) != "" && localStorage.getItem(this.localstoragekey) != null){
-		     //console.log("Hummingbirdtreeview : "+this.localstoragekey+" exists!")
-		     this.fulltree = JSON.parse(localStorage.getItem(this.localstoragekey));
-		     this.$emit('ready');
-		     return;
-		 }
+
+	 let getTreeFromCache = false;
+
+	 if (this.localstoragekey != undefined && this.localstoragekey != ""){
+	     if (localStorage.getItem(this.localstoragekey) != "" && localStorage.getItem(this.localstoragekey) != null){
+		 getTreeFromCache = true;
 	     }
 	 }
 
 
+	 this.wildcardsearch_value = localStorage.getItem("wildcardsearch_value"+this.localstoragekeyinfo);
+	 //sanitize
+	 this.wildcardsearch_sanitize(this.wildcardsearch_value);
 	 //console.log("create")
 
-
 	 
-	 //create the full tree structure
-	 this.create_full_tree();
-	 //identify endnodes
-	 this.find_endnodes(this.fulltree,this.num_endnodes,this.info);
+	 if (getTreeFromCache){
+	     //console.log("localstoragekey exists")
+	     //get from IndexedDB
+	     //console.log("get tree from cache")
+	     this.getTreeFromIDB(this.localstoragekey);
+	     //console.log("JS continues??????")
+	     //console.log(zz)
+	     
+	     //console.log("Hummingbirdtreeview : "+this.localstoragekey+" exists!")
+	     //this.fulltree = JSON.parse(localStorage.getItem(this.localstoragekey));
+	     //console.log(this.fulltree)
+	     this.$emit('ready');
+	     return;
+	 } else {
+	     //console.log("create tree")
+	     
 
-	 //console.log(this.fulltree)
 
-	 //put into localstorage
-	 if (this.localstoragekey != undefined && this.localstoragekey != ""){
-	     localStorage.setItem(this.localstoragekey,JSON.stringify(this.fulltree));
+	     
+	     //create the full tree structure
+	     this.create_full_tree();
+	     //identify endnodes
+	     this.find_endnodes(this.fulltree,this.num_endnodes,this.info);
+
+	     //console.log(this.fulltree)
+
+	     //put into localstorage
+	     if (this.localstoragekey != undefined && this.localstoragekey != ""){
+		 //localStorage.setItem(this.localstoragekey,JSON.stringify(this.fulltree));
+		 localStorage.setItem(this.localstoragekey,"true");
+	     }
+	     //put into IndexedDB
+	     if (this.localstoragekey != undefined && this.localstoragekey != ""){
+		 this.addToIDB(this.localstoragekey, JSON.stringify(this.fulltree));
+	     }
+
+	     
+	     
+	     this.$emit('ready');
 	 }
 	 
-	 this.$emit('ready');
-	 
+     },
+     beforeUnmount() {
+	 //console.log("remove EventL")
+	 document.removeEventListener('keyup',this.onKeyUp);
      },
      methods: {
+	 async addToIDB(key,val) {
+	     //console.log("addToIDB")
+	     //console.log(val)
+	     await idbSet(key,val);
+	 },
+	 async getTreeFromIDB(key) {	     
+	     //console.log("schnipp1")
+	     let tmp_fulltree = JSON.parse(await idbGet(key));
+	     const isEmpty = Object.keys(tmp_fulltree).length === 0;
+	     if (!isEmpty){
+		 this.fulltree = JSON.parse(await idbGet(key));
+	     }
+	     //console.log("getFromIDB")
+	     //console.log(this.fulltree)
+	     this.$emit('ready');
+	 },
+	 async getFromIDB(key) {	     
+	     //console.log("schnipp1")
+	     let tmp = JSON.parse(await idbGet(key));
+	     //console.log(tmp)
+	     const isEmpty = Object.keys(tmp).length === 0;
+	     if (!isEmpty){
+		 return tmp;
+	     } else {
+		 return "";
+	     }
+	 },
+	 onKeyUp(e){
+	     //console.log("keyup in Hum");
+	     //console.log(e.key)
+	     //if (e.key == "Enter" && this.wildcardsearch_isvalid == false){
+	     //this.wildcardsearch_func();
+	     //}
+	 },
 	 create_full_tree(){
-
-
-
 	     //node template
 	     //need deep copy later
 	     //these node properties will be later
@@ -232,6 +282,9 @@
 		     this.fulltree[name[0]].checkbox = checkbox;
 		     this.fulltree[name[0]].visible = true;
 		     this.fulltree[name[0]].tooltip = tooltip;
+		     if (!filepath){
+			 filepath = '/';
+		     }
 		     this.fulltree[name[0]].filepath = filepath;		    
 		     //initialize parents (again for every base node)
 		     parents = [];
@@ -255,6 +308,13 @@
 		     parents = parents.concat(name[0]);
 		     new_parents = parents.slice(0,-1);
 		 }
+		 //
+		 if (!filepath){
+		     filepath = '/' + new_parents
+			 .map(item => item.replaceAll(' ', '_'))
+			 .join('/') + '/' + name[0].replaceAll(' ', '_');
+		 }
+
 		 //-------------------------------------------------
                  //
 		 if (level>1){
@@ -312,7 +372,9 @@
 		     if (node[k].filepath != undefined){
 			 //console.log(node[k])
 			 info.num_allnodes++;
+			 //console.log(Object.keys(node[k].children).length)
 			 if (Object.keys(node[k].children).length === 0){
+			     //console.log(node[k])
 			     //console.log(node[k].filepath)
 			     node[k].endnode = true;
 			     info.num_endnodes++;
@@ -414,7 +476,8 @@
 	     this.info.num_allnodes = 0;
 	     this.info.num_endnodes = 0;
 	     this.info.numchecked = 0;
-	     
+
+	     //console.log("find_andnodes from nodeCheckedUnchecked")
 	     this.find_endnodes(this.fulltree,this.num_endnodes,this.info);
 
 
@@ -422,23 +485,99 @@
 	     //put tree into localStorage
 	     if (this.localstoragekey != undefined && this.localstoragekey != ""){
 		 //console.log("set full cruise tree in localStorage")
-		 localStorage.setItem(this.localstoragekey,JSON.stringify(this.fulltree));
+		 //localStorage.setItem(this.localstoragekey,JSON.stringify(this.fulltree));
+		 localStorage.setItem(this.localstoragekey,"true");
 	     }
+
 
 	     if (this.localstoragekeyinfo != undefined && this.localstoragekeyinfo != ""){
-		 localStorage.setItem(this.localstoragekeyinfo,JSON.stringify(this.info));
+		 //localStorage.setItem(this.localstoragekeyinfo,JSON.stringify(this.info));
+		 this.addToIDB(this.localstoragekeyinfo, JSON.stringify(this.info));
 	     }
 
+	     //put into INdexedDB
+	     if (this.localstoragekey != undefined && this.localstoragekey != ""){
+		 this.addToIDB(this.localstoragekey, JSON.stringify(this.fulltree));
+	     }
+	     
 	     this.$emit('nodeCheckedUnchecked');
 
 	 },
-	 wildcardsearch_func(){
-	     console.log("wildcardsearch_func")
-	     console.log(this.wildcardsearch_value)
+	 wildcardsearch_func(wildcardsearch_value){
+	     //console.log("wildcardsearch_func")
+	     //console.log(wildcardsearch_value)
+	     this.wildcardsearch_value = wildcardsearch_value;
+	     //return;
+	     //showLoader();
+	     //uncheck all
+	     this.uncheck_all();
+	     //
+	     this.wildcardsearch_is_processing = true;
+	     this.$emit('hum_wildcard_search_running',this.wildcardsearch_is_processing);
+	     localStorage.setItem("wildcardsearch_value"+this.localstoragekeyinfo,this.wildcardsearch_value);
+	     //
+	     //wait 100ms to let the DOM be updated with this.wildcardsearch_is_processing = true;
+	     //then trigger the search
+	     //
+	     setTimeout(() => {
+		 this.wildcardsearch_trigger = this.wildcardsearch_value;	     
+	     }, 100);
+	 },
+	 wildcardsearch_func_done(xcounter){
+	     //console.log("wildcardsearch_func_done:"+xcounter)
+	     this.searchcounter = xcounter;
+	     this.wildcardsearch_trigger = 'mbwxx60fsbqo4txu';
+	     //as long as the search is running, pressed keys are queued and would be
+	     //set into the input field, even if it was disabled, because now it is enabled again
+	     //thus use the remembered input, i.e. overwrite the input value
+	     setTimeout(() => {
+		 this.wildcardsearch_value = localStorage.getItem("wildcardsearch_value"+this.localstoragekeyinfo) ?? '';
+		 this.wildcardsearch_is_processing = false;
+		 this.$emit('hum_wildcard_search_running',this.wildcardsearch_is_processing);
+	     }, 0);
 	 },
 	 wildcardsearch_help_func(){
-	     console.log("wildcardsearch_help_func")
-	 }
+	     //console.log("wildcardsearch_help_func")
+	     this.wildcardsearch_help = true;
+	 },
+	 wildcardsearch_help_close(){
+	     //console.log("wildcardsearch_help_func")
+	     this.wildcardsearch_help = false;
+	 },
+	 wildcardsearch_sanitize(val){
+	     //console.log("wildcardsearch_sanitize:"+val)
+	     this.wildcardsearch_isvalid = !/^[a-zA-Z0-9_\-*\|\| ]*$/.test(val);
+	 },
+	 onFocus(){
+	     this.searchcounter = -1;
+	 },
+	 uncheck_all(){
+	     this.uncheck_all_trigger = true;
+	 },
+	 uncheck_all_done(){
+	     this.uncheck_all_trigger = false;
+	     this.searchcounter = -1;
+	 },
+	 check_all(){
+	     this.check_all_trigger = true;
+	 },
+	 check_all_done(){
+	     this.check_all_trigger = false;
+	     //this.searchcounter = -1;
+	 },
+	 collapse_all(){
+	     //console.log("collapse_all")
+	     this.collapse_all_trigger = true;
+	 },
+	 collapse_all_done(){
+	     this.collapse_all_trigger = false;
+	 },
+	 expand_all(){
+	     this.expand_all_trigger = true;
+	 },
+	 expand_all_done(){
+	     this.expand_all_trigger = false;
+	 },
      },
  }
  </script>

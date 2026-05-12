@@ -1,5 +1,10 @@
 # CHANGES
 
+## 2026/01/19
+
+- Tooltip update, now with HummingBirdTooltip.vue comnponent
+
+
 ## 2026/01/07
 
 - New Event "@ready", when tree is rendered.

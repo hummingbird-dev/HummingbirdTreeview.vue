@@ -8,15 +8,15 @@
 		    HummingbirdTreeview.vue 
 		</div>
 		<div class="">
-		    <hummingbird-treeview :tree="tree" :treeClickMode="treeClickMode" :checkParents="checkParents" ref="hummingbirdtreeviewref"  :localstoragekey="localstoragekey" @nodeCheckedUnchecked="nodeCheckedUnchecked" :localstoragekeyinfo="localstoragekeyinfo" @ready="tree_ready">
+		    <hummingbird-treeview :tree="tree" :treeClickMode="treeClickMode" :checkParents="checkParents" ref="hummingbirdtreeviewref"  :localstoragekey="localstoragekey" @nodeCheckedUnchecked="nodeCheckedUnchecked" :localstoragekeyinfo="localstoragekeyinfo" @ready="tree_ready" :wildcardsearch="true">
 		    </hummingbird-treeview>
 		</div>
 		<div class="pt-10 text-blue-500 font-bold">
 		    Checked Items:
                     {{ this.tree_num_checked }} of {{ this.tree_num_all }}
 		</div>
-		<div class="pt-4">
-		    <ul class="list-disc">
+		<div class="pt-4 pb-20">
+		    <ul class="list-disc pl-6">
 			<div v-for="i of flatEndnodes">
 			    <li v-if="i.checked">
 				{{ i.name }}
@@ -33,7 +33,10 @@
 
 <script>
 
+ import { ref } from 'vue';
  import HummingbirdTreeview from './components/HummingbirdTreeview.vue'
+
+ const hummingbirdtreeviewref = ref(null);
  
  export default {
      components: {
@@ -44,8 +47,8 @@
 	     tree: [],
 	     treeClickMode: "multi", //single, multi
 	     checkParents: true, //true, false
-	     localstoragekey: "humtree_1",
-	     localstoragekeyinfo: "humtree_info_1",
+	     localstoragekey: "humtree_6",
+	     localstoragekeyinfo: "humtree_info_6",
 	     tree_num_all: 0,
 	     tree_num_checked: 0,
 	     flatEndnodes: {},
@@ -110,21 +113,15 @@
 		 "name": "--Robin Wright",
 	     },
 	 ];
-
-	 
-
      },
      mounted: function() {
      },
      methods: {
-	 nodeCheckedUnchecked(){
-             if (localStorage.getItem(this.localstoragekeyinfo) != null && localStorage.getItem(this.localstoragekeyinfo) != "" ){
-                 let info = JSON.parse(localStorage.getItem(this.localstoragekeyinfo));
-                 //console.log(info)
-                 this.tree_num_checked = info.numchecked;
-                 this.tree_num_all = info.num_endnodes;
-		 this.flatEndnodes = info.flatEndnodes;
-             }
+	 async nodeCheckedUnchecked(){
+	     let info = await this.$refs.hummingbirdtreeviewref.getFromIDB(this.localstoragekeyinfo);
+             this.tree_num_checked = info.numchecked;
+             this.tree_num_all = info.num_endnodes;
+	     this.flatEndnodes = info.flatEndnodes;
 	 },
 	 tree_ready(){
 	     console.log("tree is rendered");
